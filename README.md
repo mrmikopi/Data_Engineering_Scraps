@@ -1,2 +1,2 @@
-# Data_Engineering_Scraps
+# Data Engineering Scraps
 Course notes from Coursera data engineering course
