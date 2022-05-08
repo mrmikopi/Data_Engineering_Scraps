@@ -12,15 +12,18 @@
 7. [Conditioning](#conditioning)
 8. [Logic Operators](#logic-operators)
 9. [Loops](#loops)
+10. [Functions](#functions)
 
 ## Intro
 Type öğrenme fonskyonu: **type()**
 
 ### Typecasting 
 
+```py
     float(1) : 1.0
     int(3.99) : 3  (asagi yuvarliyor fix)
     int('1') : 1
+```
 
 ### Booleans 
 
@@ -28,7 +31,9 @@ Booleanların başı uppercase
 
 **True / False**
 
+```py
     bool(0) = False
+```
 
 ### Divisions
 
@@ -40,9 +45,11 @@ Booleanların başı uppercase
 
 ### Kullandigim metodlar:
 
-    Print('string')
+```py
+Print('string')
 
-    sys.version (import sys lazim)
+sys.version (import sys lazim)
+```
 
 *#Comments*
 
@@ -53,7 +60,9 @@ sys.float_info  : float hakkinda teknik bilgiler
 Listelerde negative indexing var.
 Son elemana 
 
-    List[-1] // diyerek ulasabilirsin
+```py
+List[-1] diyerek ulasabilirsin
+```
 
 Listelerde ayni type aranmaz.
 Farkli type nesneler ayni listede durabilir
@@ -61,26 +70,37 @@ Farkli type nesneler ayni listede durabilir
 Tuple'lar: ('A', 2) mesela.
 Listeye bunlar bile girebiliyor, nested listler de girebiliyor.
 
-    liste[4:9] // dersen indexi 4 9 arasi degerleri slice eder (ilk dahil ikinci degil)
+```py
+liste[4:9] // dersen indexi 4 9 arasi degerleri slice eder (ilk dahil ikinci degil)
 
-    .extend() // listeye eleman ekleme fonksyonu. 
-    list.extend(  [ 1 , 'C' ]  )  : 2 eleman ekledik
+.extend() // listeye eleman ekleme fonksyonu. 
+list.extend(  [ 1 , 'C' ]  )  : 2 eleman ekledik
+```
 
 O sondaki listeyi tek bi eleman olarak eklemek istiyorsan da:
 
-    append  metodunu kullanacaksin. append( [array] ) yapaceksin.
+    
+```py
+append metodunu kullanacaksin. append( [array] ) yapaceksin.
+```
 
 Eleman degistirme:
 
-    a[0] = 'Hoppp yeni deger';
+```py
+a[0] = 'Hoppp yeni deger';
+```
 
 Eleman silme:
 
-    del(a[1])
+```py
+del(a[1])
+```
 
 ## Strings
 
-    string.split() // bize stringi KELIME KELIME split eder
+```py
+string.split() # bize stringi KELIME KELIME split eder
+```
 
 Delimeter de alabilir tabi. split(,) dersin, virgule gore split eder
 
@@ -90,24 +110,32 @@ Diger referansin degeri de ayni seyi gosterdigi icin degisecek.
 
 O yuzden, listeleri referanslarla degistirmek yerine klonlayabiliriz.
 
-    B = A[:] diyorsun, hoppaa
+```py
+B = A[:] diyorsun, hoppaa
+```
 
 Listeleri concat etmek (yazdirirken filan) icin + operatoru
 
-    A = [ asdasd ]
-    B = [ Ikincil Degerler ]
-    A + B : [ adsasd, Ikincil Degerler ]
+```py
+A = [ asdasd ]
+B = [ Ikincil Degerler ]
+A + B : [ adsasd, Ikincil Degerler ]
+```
 
 Tek tırnak veya cıft tırnak
 Stringler array gibi kullanilabiliyor.
 
-    String[0] = stringin ilk karakteri
-    String[-1] = stringin son harfi. Dogal olarak, negatif index de gecerli 
+```py
+String[0]   = stringin ilk karakteri
+String[-1]  = stringin son harfi. Dogal olarak, negatif index de gecerli 
+```
 
-    Array[::2] demek, her 2nin modu eleman demek.
+```py
+Array[::2] demek, her 2nin modu eleman demek.
     
     string = "Bir String" olsun
     string[::2} = [BrSrn] donecek
+```
 
 Sayi yazmadan : koymak = 0 yazmak.
 **string[0:5:2]** olsaydi **= [BrS]**
@@ -117,17 +145,23 @@ Sayi yazmadan : koymak = 0 yazmak.
 
 **6 uzunlukta bisey al degil!** *(Tekrar baktim ve onayliyorum)*
 
-    len(string) // uzunlugu verir
+```py
+len(string) # uzunlugu verir
+```
 
 Concat, arraylardeki gibi **( + )** operatoru ile yapilir.
 
 Stringleri Carpip Multiple edebiliriz.
     
-    String * 3 = "Bir StringBir StringBir String" olurdu
+```py
+String * 3 = "Bir StringBir StringBir String" olurdu
+```
 
 Stringler immutable, java gibi.
 
-    String[0] = "C" // diyemezsin
+```py
+String[0] = "C"  diyemezsin
+```
 
 Onun yerine referansi yeni bi stringe point et
 
@@ -144,10 +178,12 @@ Bu bastaki **r**, escape'leri onluyor
 
 ### Bazi string metodlari:
 
-    string.upper() = uppercase halini dondurur
-    string.replace("Degisecek kelime", "yeni kelime");
-    string.find("sub") = stringin icinde "sub" kelimesi kacinci indexte basliyor. 
-                        Yoksa -1
+```py
+string.upper() = uppercase halini dondurur
+string.replace("Degisecek kelime", "yeni kelime");
+string.find("sub") = stringin icinde "sub" kelimesi kacinci indexte basliyor. 
+                    Yoksa -1
+```
 
 ## Tuples:
 
@@ -159,14 +195,18 @@ Ama tuple'in kendi type'i var **(tuple)**
 
 Yine indexlerle erisim.
 
-    Tuple[0] = ilk eleman. Negatif index de var yine
+```py
+Tuple[0] = ilk eleman. Negatif index de var yine
+```
 
 Concat yine **+** ile.
 Slice yine var **tuple[1:3]** gibi.
 **len()** de var
 append ve extend **yok**!
 
-    sorted(tuple) ile sortlayabiliriz
+```py
+sorted(tuple) ile sortlayabiliriz
+```
 
 Stringdeki find() yerine burada **.index( item )** var
 
@@ -177,8 +217,9 @@ Ayni seyi gosteren iki referanstan biri degisirse,
 Digeri **degismiyor**.
 String de boyle immutabledir.
 
-    bisey = sorted( tuple ) ile sortlayabiliriz
-
+```py
+bisey = sorted( tuple ) ile sortlayabiliriz
+```
 Ama dondurulen type List olur! 
 **[1,2,3]** olur elinde.
 
@@ -187,13 +228,17 @@ Ama dondurulen type List olur!
 anam babam array.
 Koseli parantez reis:
 
-    [0:5]
+```py
+[0:5]
+```
 
 **+** operatoru liste concat eder.
 
 Listeler **mutable** olduğundan ilk elemanı son elemanı vs. Değiştirebiliriz.
 
-    del(index) yaparak silebiliriz listeden.
+```py
+del(index) yaparak silebiliriz listeden.
+```
 
 String'deki **split()**, liste donduruyordu.
 Delimeter de verebilirsin icine, ona gore boler
@@ -218,42 +263,58 @@ Yani keylerin tipi ayni olmak zorunda degil ama Immut. ve Uniq. Olmasi yeterli.
 
 Touple bi keyle beraber string keyler kullanabiliriz, mesela:
 
-    { "key1":"value1", "key2":2, "key3":[3,3,3], ("Ouuu", "Bu bi touple keyi"):("Touple valuesu") }
-    Dict1[ "key1" ]  cagirirsan "value1" donecek.
+```py
+{ "key1":"value1", "key2":2, "key3":[3,3,3], ("Ouuu", "Bu bi touple keyi"):("Touple valuesu") }
+Dict1[ "key1" ]  cagirirsan "value1" donecek.
+```
 
 { } Sunlarla olusturduk
 
-    Dict1 = {  biseyler:biseyler }
+```py
+Dict1 = {  biseyler:biseyler }
+```
 
 Eklemek icin olmayan bi degeri set et direkt.
 
-    Dict1["za"] = "xd"
+```py
+Dict1["za"] = "xd"
+```
 
-    del( Dict1[ "silinenKey" ] ) // ile degeri sildik
+```py
+del( Dict1[ "silinenKey" ] ) # ile degeri sildik
 
-    "Aranan Deger" in Dict1 // ile arama yaptik. 
-    // False donecek olmadigi icin, bool donuyor.
+"Aranan Deger" in Dict1      # ile arama yaptik. 
+# False donecek olmadigi icin, bool donuyor.
 
-    Dict1.keys( ) // cagirirsan keyler donecek, liste olarak
-    Dict1.values( ) // ile valuelari getirdik liste olarak
+Dict1.keys( )   # cagirirsan keyler donecek, liste olarak
+Dict1.values( ) # ile valuelari getirdik liste olarak
+```
 
 Ayni keyi iki kere kullanirsan:
 
-    dic1 = { "key1":"a", "key1":"b" }
-    "key1":"b"  dondurur
+```py
+dic1 = { "key1":"a", "key1":"b" }
+"key1":"b" # dondurur
+```
 
 ## Sets
 
 **Sirasiz, unique** elementler koleksyonu / KUMELER 
 
-    Set1 = { "element" , "BaskaElement", 4 }
+```py
+Set1 = { "element" , "BaskaElement", 4 }
+```
 
-    set( list ) seklinde bi typeCast metodu da var.
-    Liste alip set cikariyor
+```py
+set( list ) seklinde bi typeCast metodu da var.
+List alip set cikariyor
+```
 
-    Set1.add ( "element" ) ile ekleme
-    Set1.remove ( "element" ) ile silme
-    "Aranan Deger" in Set1  ==  False donecek, in var yine Dict. gibi
+```py
+Set1.add ( "element" ) ile ekleme
+Set1.remove ( "element" ) ile silme
+"Aranan Deger" in Set1  ==  False donecek, in var yine Dict. gibi
+```
 
 Kumelerin kesisen degerini cekmek icin filan hep operatorler var.
 
@@ -266,32 +327,40 @@ Kumelerin kesisen degerini cekmek icin filan hep operatorler var.
 
 Variable olusturmaya da gerek yok tabi, pratik iki ornek:
 
-    set({ "A", "b" }).issubset( Set1 )
-    Set1.issuperset({ "Back in Black", "AC/DC" })
+```py
+set({ "A", "b" }).issubset( Set1 )
+Set1.issuperset({ "Back in Black", "AC/DC" })
+```
 
 ## Conditioning
 
 Bool donen operatorlerimiz var.
 
-    == equals'i kontrol eder
-    >   buyuktur   |||   >=  buyuk esittir
-    <   kucuktur   |||   <=   kucuk esittir
+```py
+== equals kontrol eder
+>   buyuktur   |||   >=  buyuk esittir
+<   kucuktur   |||   <=   kucuk esittir
+```
 
 Char ve stringlerde ascii degere gore comparison var.
 
-    'B' > 'A'  dir mesela.
-    'BA' > 'AB'  dir ayrica, ilkin onceligi var.
-(Ascii kodlari case sensitive)
+```py
+'B' > 'A'  dir mesela.
+'BA' > 'AB'  dir ayrica, ilkin onceligi var.
+# (Ascii kodlari case sensitive)
+```
 
-    !=  esit degil
+```py
+!=  esit degil
 
-    if (  condition  ) :
-        Statement
-    elif (  other condition  ) :
-        Other Statement
-    else :
-        Otherest Statement
-    Continues
+if (  condition  ) :
+    Statement
+elif (  other condition  ) :
+    Other Statement
+else :
+    Otherest Statement
+Continues
+```
 
 if indent'leri genelde 4 space (compiler based)
 
@@ -299,56 +368,180 @@ if indent'leri genelde 4 space (compiler based)
 
 Bool alip bool donerler
 
-    not( someBool )  returns Bool'un Tersi
+```py
+not( someBool ) # returns Bool'un Tersi
+```
 
 **or** 
 
-    if( biseyler ) or ( baska seyler ):
-    	Bambaska seyler
+```py
+if( biseyler ) or ( baska seyler ):
+    Bambaska seyler
+```
 
 **and**
 
-    if( biseyler ) and ( baska seyler):
-    	Super seyler
-	
+```py
+if( biseyler ) and ( baska seyler):
+    Super seyler
+```
+
 Parantez sart degil.
 
-    if biseyler or baskaSeyler or bambaskaSeyler:
-        Statementz
+```py
+if biseyler or baskaSeyler or bambaskaSeyler:
+    Statementz
+```
 
 ## Loops
 
 **range ( N )** metodu, (N pozitifse),
-	0'dan N'e kadar **range objesi** donuyor.
+0'dan N'e kadar **range objesi** donuyor.
 
-    range(3) = [0,1,2]
+```py
+range(3) = [0,1,2]
+```
 
 range( S, E ) Start S, End E arasi sequence
 
-    range(10,13) = [10,11,12]
+```py
+range(10,13) = [10,11,12]
+```
 
-    for i in range( 0, 5 ) :
-    	array[i] = bisey
+```py
+for i in range( 0, 5 ) :
+    array[i] = bisey
+```
+
 ! Indent'e dikkat
 
 loop'a range fonksyonu haricinde direkt List filan da verebilirsin
 
-    for square in squares:
-    	Statements
+```py
+for square in squares:
+    Statements
+```
 
 Hem itemleri hem de indexlerini tutarak loop edebilirsin,
 
-    for i, item in  enumerate ( squares ):
-    	print( i +"th element is: " + item )
-	
+```py
+for i, item in  enumerate ( squares ):
+    print( i +"th element is: " + item )
+```
+
 **while** icin:
 
-    i = 0
-    while ( array[i] > 5 and i<len(array) ):
-	    array.append(biseyler)
-	    i = i + 1   // i += 1 de olur
-	
+```py
+i = 0
+while ( array[i] > 5 and i<len(array) ):
+    array.append(biseyler)
+    i = i + 1  # i += 1 de olur
+```
+
 While'a **i < len(a)** ekledik, eklemezsek array out of bounds olana kadar dolasabilir
 
 ## Functions
 
+Input alip output veren unsurlardir.
+
+```py
+def functionName(inputs):
+    """ Documentation """
+    # someTasks;
+    return value;
+```
+
+Bazi tanimli fonksyonlar
+
+```py
+len(x)      ## x'in uzunlugunu getirir
+sum(x)      ## iterable bir x'in degerlerini toplar
+sorted(x)   ## Listeyi veya tuple'in sirali versiyonunu doner. 
+            ## Orijinale bisey olmuyor.
+sort(x)     ## mevcut listeyi siralar, degistirir
+help(func)  ## func metodunun documentationunu getirir
+```
+
+Su referanstan bakilabilir bazi onemli olanlara:
+[Python Onemli Metotlar](https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBMDeveloperSkillsNetwork-PY0101EN-SkillsNetwork/labs/Module%203/Python_reference_sheet.pdf?utm_term=10006555)
+
+Type belirtilmedigi icin, overloada gerek olmuyor.
+
+```py
+def func(x,y):
+    c = x * y
+    return c
+
+func(2,"string ")   : "string string "
+func(3,5.6)         : 16.8
+func(2,3)           : 6
+```
+**pass** keywordu metodlari return value olmadan gecebilmeni saglar. Aslinda **None** objesi donuyor.
+
+```py
+def func():
+    pass
+
+print(func()) : None
+```
+
+**Collecting Arguments**
+
+Inputa kac sayida arguman gelecegini kestiremiyorsun, **\*** atiyosun basa. Metod onlari tuple'a ekliyor.
+
+```py
+def func(*names):
+    for name in names:
+        print(name)
+```
+
+Cift yildiz atarak, Tuple yerine **Dictionary** icine de toplayabiliriz. Ornekte inputun nasil verildigine dikkat!
+
+```py
+def printDictionary(**args):
+    for key in args:
+        print(key + " : " + args[key])
+
+printDictionary(Country='Canada',Province='Ontario',City='Toronto')
+# OUTPUT:
+# Country : Canada
+# Province : Ontario
+# City : Toronto
+```
+
+Key:Value seklinde ( **:** ) isaretiyle verince calismiyor.
+
+**Scope** 
+
+Scope isleri gecerli halen. Metodda tanimladigin degeri baska yerde cagiramazsin.
+
+Metodun disinda tanimladigin degeri metodda cagirabilirsin! Static gibi. Ama ayni isimde baska bisey tanimlamayacaksin local variable olarak.
+
+Local variable'larin baslarina **global** yazarak, metodlarin disindan da erisilebilir olmalarini saglayabiliriz.
+
+```py
+def func()
+    global z
+    z = "deger"
+    return z
+
+func()      # Cagirdik ki o bloga girip olustursun
+print(z)    # func'u cagirmasaydik gormezdi. 
+```
+
+**Default Arguements**
+
+```py
+def func(x=5):
+    return x*x
+
+print(func()) # returns 25
+```
+
+Tanimli referansi silmek icin
+
+```py
+del referans
+```
+
+Metoda input olarak gelen objeyi **dogrudan degistirebiliriz**. Ekstra anotasyonlara gerek olmuyor.
