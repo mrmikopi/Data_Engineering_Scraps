@@ -8,11 +8,14 @@
 3. [Strings](#strings)
 4. [Tuples](#tuples)
 5. [Lists](#list)
-6. [Sets](#sets)
-7. [Conditioning](#conditioning)
-8. [Logic Operators](#logic-operators)
-9. [Loops](#loops)
-10. [Functions](#functions)
+6. [Dictionaries](#dictionaries)
+7. [Sets](#sets)
+8. [Conditioning](#conditioning)
+9. [Logic Operators](#logic-operators)
+10. [Loops](#loops)
+11. [Functions](#functions)
+12. [Exception Handling](#exception-handling)
+13. [Objects and Classes](#objects--classes)
 
 ## Intro
 Type öğrenme fonskyonu: **type()**
@@ -545,3 +548,82 @@ del referans
 ```
 
 Metoda input olarak gelen objeyi **dogrudan degistirebiliriz**. Ekstra anotasyonlara gerek olmuyor.
+
+## Exception Handling
+
+Dillerdeki exceptionlar bunlarda da var. Built-in exceptionlar listesi: [Exceptionlar](https://docs.python.org/3/library/exceptions.html)
+
+### Try/Except/Else/Finally
+
+Kullanim:
+
+```py
+try:
+    x = 1/0
+    print(x)
+except (ZeroDivisionError, NameError):
+    print("Tatsiz olaylar yasandi")
+except IOError:
+    print("Baska tatsiz olaylar da yasanabilirdi")
+except:
+    print("Kalan tum tatsizliklari burada topladim")
+else:
+    print("Tatsiz olaylar yasanmadi")
+finally:
+    print("Aman tadimiz kacmasin")
+```
+
+**Input alma yontemi**
+```py
+b = int(input("Please enter a number"))
+# int'e typecast de var
+```
+
+## Objects & Classes
+
+int'ler floatlar stringler listler dictionaryler filan hep bir type idi.
+Her objenin bir type'i vardir. Instance(Object)ler type/classlardan olusur.
+
+```py
+class Student(object):
+# class keyword
+# Student class adi
+# object, PARENT class
+
+    def __init__(self, age, name="defaultName"):
+    # init, ozel Constructor keywordudur
+        self.age = age;
+        self.name = name;
+        #this.age = age gibi
+```
+
+```py
+alperen = Student(25,'alperen')
+# 'new' yok, self de onemli degil
+print(alperen.age) # 25
+alperen.age = 26
+print(alperen.age) # 26 happy birthday
+```
+
+Metod ekleyelim
+
+```py
+def growOlder(self,years):
+# self'i parametre olarak verdik, boylece:
+# hangi instance'i update edecegimiz belli oldu
+    self.age += years;
+    return age # opsiyonel
+
+alperen.growOlder(9)
+print(alperen.age) # Otuzbes years old
+```
+
+```py
+dir(instance)
+#instance'in ait oldugu classin Attributelarini
+# ve metodlarini getirir
+```
+
+## Reading Files
+
+Todo
