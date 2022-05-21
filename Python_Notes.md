@@ -16,6 +16,7 @@
 11. [Functions](#functions)
 12. [Exception Handling](#exception-handling)
 13. [Objects and Classes](#objects--classes)
+14. [IO Operations](#io-operations)
 
 ## Intro
 Type öğrenme fonskyonu: **type()**
@@ -624,6 +625,97 @@ dir(instance)
 # ve metodlarini getirir
 ```
 
-## Reading Files
+## IO Operations
 
-Todo
+### Read File
+
+Read islemi icin "r" modunda open metodu calistirilir.
+Write icin "w", append icin "a" yazabilirdik. Baska baska modlar da var.
+
+```py
+file1 = open("/resources/fileToRead.txt","r")
+# open( name , mode)
+file1.close() # Bu Close ile ugrasacagina, with kullan:
+
+# Sondaki column'u unutma
+with open("Example1.txt","r") as File2:
+    file_stuff=File2.read()
+    print(file_stuff) 
+print(File2.closed) # true dondurecek
+print(file_stuff) 
+```
+
+Read metodlari:
+
+```py
+File2.read()      # Tum dosyayi string olarak aktarir
+File2.read(x)     # x kadar karakter oku
+File2.readlines() # Satirlarin oldugu bir liste verir.
+File2.readline()  # Mevcut/ilk satiri okur
+                  # Tekrar cagirirsan diger satira atlar.
+File2.readline(x) # mevcut satirda x kadar oku, x satirdan
+                  # daha uzun olursa asagi devam etmez.
+```
+
+File objesi iterable ve line'lari donecek. Boylece:
+
+```py
+with open("file","r") as File3:
+    for line in File3:
+        print(line)
+```
+
+Tum dosyada x kadar karakter oku demek icin:
+```py
+File2.readline(4) # Mevcut cursor/start'tan 4 karakter oku.
+                  # Cursoru 5. karaktere set eder.
+File2.readline(9) # 5. karakterden devam, 9 karakter okur.
+```
+
+### Write to a File
+
+```py
+file1 = open("path/file.txt","w") # "w" bu sefer
+# OR
+with open("path/file.txt","w") as file1:
+    file1.write("Yazdirilan Satirlar\n")
+    file1.write("Yazdirilan ikinci satir\n")
+```
+Bir listede stringlerimiz olsaydi, for loopu icinde her eleman icin write(eleman) yazdirabilirdik.
+
+**"w"** modu ayni dosyayi tekrar cagirdiginda sifirlayip bastan yazacaktir.
+
+Oyle olmamasi icin **"a"** modunda **append** ederek yazmamiz gerek. Bir takim modlar surada:
+
+*   **r+** : Reading and writing. Cannot truncate the file.
+*   **w+** : Writing and reading. Truncates the file.
+*   **a+** : Appending and Reading. Creates a new file, if none exists.
+
+Modlar devreye girdiginde, cursor'un pozisyonu onem kazaniyor.
+**w, r ve a** straight forward baya. w ve r basta, a sonda cursor pozisyonu ile calisiyor.
+
+**+** operatorler devreye girdiginde olay degisik.
+
+```py
+file1.tell()    # Cursorun pozisyonunu getirir.
+file1.seek(0,0) # Cursoru 0 + 0. indexe gotur.
+```
+
+**a+** ile acildiginda cursor sonda bulundugu icin, kafana gore .read() atamiyorsun. Sondan okumaya calisacak.
+Yukaridaki metodlar ile basa veya yazdirdigin yerlere dondurup yazabilirsin.
+
+### Notlar
+
+- r+ w+ a+ gibi modlarda cursor cok onemli. **truncate()** veya **print()** gibi fonksyonlarin islenisini cok bozuyor. Dosyayi sileyim de temiz dosyayla devam edeyim diyorsun, cursor sondaysa hicbir sey silmiyor mesela(?). 
+- file1.**writelines( list )** metodu, inputtaki listenin her elemanini ayri ayri satirlara yazdirabiliyor.
+
+```py
+inactive = [member for member in members if ('no' in member)]
+            '''
+            The above is the same as 
+
+            for member in members:
+            if 'no' in member:
+                inactive.append(member)
+            '''
+```
