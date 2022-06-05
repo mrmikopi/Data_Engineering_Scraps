@@ -17,6 +17,8 @@
 12. [Exception Handling](#exception-handling)
 13. [Objects and Classes](#objects--classes)
 14. [IO Operations](#io-operations)
+15. [Pandas](#pandas)
+16. [Numpy](#numpy)
 
 ## Intro
 Type öğrenme fonskyonu: **type()**
@@ -718,4 +720,218 @@ inactive = [member for member in members if ('no' in member)]
             if 'no' in member:
                 inactive.append(member)
             '''
+```
+
+## Pandas
+
+### Loading Data with Pandas
+
+```py
+import pandas as pd # kisaltma kullandik
+csv_path = "file.csv"
+df = pd.read_csv(csv_path) # df = dataFrame icin
+df.head() # Ilk 5 rowu gostermesi icin komut
+```
+DataFrame, tabloya karsilik geliyor. Dictionarylerden de olusturabilirsin. Dictionarylerden:
+```py
+Dict = { 'Kolon1' : ['Kolondaki', 'Degerler', 'Sirayla'  ],
+         'Kolon2' : ['Ikinci'   , 'Kolonun' , 'Degerleri']}
+tablo_frame = pd.DataFrame(Dict)
+```
+Seklinde olusturabilirsin.
+
+Baska Framelerin columnlarini araklayip yeni frame olusturmak da mumkun.
+
+```py
+frame = pd.read(biseyler)
+impostor = frame[ ["Columnlari", "buraya", "sirala"] ] # dersen bu columnlardan frame olusturur.
+# Columndaki degerleri de alir tabi yaninda
+```
+
+DataFramedeki degerlere **erismek** icin:
+
+```py
+df.ix[0,0] # ilk column ilk row cell degeri.
+df[['ColumnAdi']] # Dogru mu emin degilim! Series getiriyor olabilir
+# Dogruysa: O kolonu getirir, birden cok olabilir.
+df[5] # 5. row
+```
+
+### Working with Pandas
+
+Framedeki unique degerleri listelemeni saglayan bir fonksiyonu var.
+
+```py
+df['Column'].unique()
+
+# ReleaseDate'i 1980den buyuk olan kayitlar
+df[ df[ 'ReleaseDate'] >= 1980 ]
+```
+
+DataFrame'i dosyaya kaydetme:
+```py
+df1.to_csv("FileName.csv")
+```
+
+### Lab Notlari
+
+DataFrame haricinde, **Series** Kullanimi da Pandas ile mevcut.
+Series, tek boyutlu bir array gibi. Bi, veriyi iceren array var; bir de indexleri veya labellari tutan bir array. Map gibi yani. Ama, faydali bisuru metodu da varmis. **Sirali** ayrica.
+
+Tek [ ] ile cagirirsan **Series** olarak cagirir. [[ ]] ile cagirirsan **DataFrame**
+
+#### loc() ve iloc()
+Bu metodlar ile Locate islemi yapilir.
+
+- **loc[r,c]** label ile arama saglar.
+- **iloc[r,c]** index ile arama saglar.
+
+```py
+df.loc[2,"Salary"] #2. rowdakinin Salarysi
+df.iloc[0,0] #ilk row ilk column
+```
+
+```py
+df.set_index("Salary") #Kolonu Index kolonu yapar.
+df.index = list        # listedeki elemanlari tablonun yeni indexi yapar.
+```
+
+Index yaptigin kolon sayesinde, o kolondaki bi degeri df.loc[ **buraya**, 'yazabilirsin'].
+Name indexken mesela:
+
+```py
+df1.loc['John', 'Salary'] #John'un paralari getir bi bakalim
+```
+
+! Pratik lazim loc iloc islerine
+
+#### Slicing
+
+```py
+data[start:end] # end is excluded
+[0:3]           # mesela 0 1 2
+```
+
+**loc()** kullaniminda start da end de **inclusive**. loc'un icine integer versen de boyle oluyor. Zaten loc'a verilen integer, pozisyonunu degil label'ini ifade ediyor.
+
+```py
+df.iloc[0:2, 0:3] # ilk 2 row, 3 column
+```
+
+### Ikinci Lab Notlari
+
+iloc hep indexlere, loc da hep labellara(df'nin indexi de dahil) set edili unutma.
+
+## Numpy
+
+N Dimensional arrayler kullanmamizi saglar. Bu arrayler **ayni type**'da objeler iceren **sabit uzunluklu** objelerdir. Listelerden farki bu. 
+
+Bazi propertyler:
+
+```py
+array.size  # array uzunlugu
+array.ndim  # kac dimension oldugu
+array.shape # her dimensionun size'i. Orn: (5,)
+```
+
+### Indexing & Slicing
+
+Listelerdeki kullanimla ayni:
+
+```py
+a[0] = 100 # ilk elemani 100 yapar
+```
+
+Slicing icin:
+
+```py
+b = a[1:3]  # a'nin 1 ve 2. indexlerinden 
+            # bir array olusutur.
+a[3:5] = 300,400
+# 3. ve 4. indexleri 300 ve 400 yaptik
+a[1:8:2]    # mod 2'ye gore seciyo, ikiser ikiser
+a[:4]       # start, default 0'dur
+a[0:]       # end, belirtilmezse son elemandir & lengthtir
+a[1:6:]     # step, belirtilmezse 1'dir ve her seyi yazdirir
+```
+
+### Matematik Islemleri
+
+Numpy'in arrayleri toplama gibi bir operasyonu var.
+Daha rahat anlasilmasi icin vektor toplami seklinde videoda ifade edilmis. Array olusuturup boyle toplamak, python listleri olusturup **zip()** metodu ile toplamaya calismaktan hem daha rahat hem daha hizli imis
+
+```py
+a = np.array([1,0])
+b = np.array([0,1])
+c = a + b  # [1,1]
+    # Veya
+c = np.add(a,b)
+```
+
+Cikarma da ayni sekilde mevcut. Skaler carpim da gecerli aynen (2 ile carpim gibi mesela).
+
+Ikı vektorun birbiriyle carpiminda bi x product bi dot product vardi. Cross product kolay olan. Ilk degerler ilk degerlerle carpiliyor, ikinciler ikinci degerlerle...
+
+Cross product:
+```py
+a * b # seklinde ifade ediliyor.
+```
+
+Dot product:
+Ilk degerler carpimi + ikinci degerler carpimi
+Iki vektorun ne kadar benzer oldugunu verir(?) dedi.
+
+Numpy'da yapmak icin:
+```py
+result = np.dot(a,b)
+```
+
+Vektore skaler ekleme:
+
+```py
+c = a+1 # her degere 1 ekler
+```
+
+### Universal Functions
+
+Tum dimensionlar icin gecerli fonskyonlardir:
+
+```py
+np.pi    # pi sayisinin constanti
+a.mean() # tum elemanlarin ortalamasini dondurur
+a.max()  # max degeri dondurur
+a.sin()  # tum degerleri sin(x) fonskyonuna sokar. Cikti olarak baska bi array doner.
+np.linspace(s,e,v)
+# start: s ve end: e arasini, 
+# v kadar value olacak sekilde
+# ESIT ARALIKLARA bolup, 
+# array olarak dondurur. Orn:
+# np.linespace(-2,2,5) : -2 ve 2 arasindaki 
+# tam sayilari dondurecektir array halinde
+```
+
+### Lab Notlari
+
+```py
+np.__version__  # version
+a.dtype     # data type
+a[list]     # index olarak liste verirsen,
+        # listedeki elemanlarin oldugu
+        # indexleri alir. Hatta:
+
+list = [1,3,4,5,7]
+a[list] = 1000  # list'deki degerlerin hepsi
+            # 1000 oldu.
+
+a.std()     # Standart Sapma/Deviation
+```
+
+Aritmetik islemler icin + - * gibi,
+
+```py
+np.add(a,b)      # +
+np.subtract(a,b) # - || a'dan b'yi cikar
+np.multiply      # * || Skaler carpim
+np.divide        # / || a bolu b
+np.dot           # dot product
 ```
