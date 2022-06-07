@@ -935,3 +935,45 @@ np.multiply      # * || Skaler carpim
 np.divide        # / || a bolu b
 np.dot           # dot product
 ```
+
+### Two Dimensional Numpy
+
+Ornek:
+
+```py
+a = [[1,2,3],[10,11,12],[700,800,900]]
+
+a = |  1, 2 ,3  |
+    | 10,11 ,12 |
+    |700,800,900|
+
+a.ndim  = 2
+a.shape = (3,3) # 3 tane, 3 elemanli liste.
+                # veya 3 x 3 bir matrix
+a.size  = 9
+
+a[0][0]     # ilk row ilk column
+a[0,1]      # Aynisi
+a[1][2]     # ikinci row ucuncu column
+```
+![2d Indexing](resource/Screenshot_4.png)
+
+Slicing de mevcut
+
+```py
+a[0,0:2]  # ilk row, ilk iki eleman
+          # np.ndarray objesi doner
+```
+
+One-Dimensional islemler burada da var:
+
+```py
+z = x + y   # Matrix Addition
+z = 2 * x   # Skaler carpim
+z = x * y   # cross product
+z = np.dot(x,y)
+# x'in row sayisi y'nin column sayisina esitse
+# Internetten bak yaw bisuru aciklama var
+np.sin(z)   # z'nin tum degerlerine sin() alir
+z.T         # Transpose! (rowlar->columnlara cevrilir)
+```
