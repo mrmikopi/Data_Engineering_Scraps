@@ -19,6 +19,7 @@
 14. [IO Operations](#io-operations)
 15. [Pandas](#pandas)
 16. [Numpy](#numpy)
+17. [APIs](#apis)
 
 ## Intro
 Type öğrenme fonskyonu: **type()**
@@ -977,3 +978,17 @@ z = np.dot(x,y)
 np.sin(z)   # z'nin tum degerlerine sin() alir
 z.T         # Transpose! (rowlar->columnlara cevrilir)
 ```
+
+## APIs
+
+Programlarin birbirleriyle etkilesmesini saglayan arayuzler. Bu iletisim metotlar tarafindan basitce yurutulebilir.
+
+**REST APIs**: REpresentational State Transfer APIs. Web servisleriyle iletisimi saglar. HTTP kullanir. Json icerir. Request ve response mantigi.
+
+Ornek olarak, PyCoinGecko apisini kullaniyor. Bilgisayara kurup, programa import edince, metodlari istedigin gibi cagir. Ornegin devaminda ibm text to speech ve translation apileri isledi biraz.
+
+### Lab notlari
+
+Ayni isin lab'i icin Api credentialleri indirdim. Speech to text ve Language Translator api'leri.
+
+Authenticator ile credential ve url'i dogruladim. Ardindan servisi obje olarak cekip gerekli metodlarla speech to text islemleri yapildi. Ayni sekilde language translator de kullanildi.
