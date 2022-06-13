@@ -992,3 +992,93 @@ Ornek olarak, PyCoinGecko apisini kullaniyor. Bilgisayara kurup, programa import
 Ayni isin lab'i icin Api credentialleri indirdim. Speech to text ve Language Translator api'leri.
 
 Authenticator ile credential ve url'i dogruladim. Ardindan servisi obje olarak cekip gerekli metodlarla speech to text islemleri yapildi. Ayni sekilde language translator de kullanildi.
+
+## REST API's, Web Scraping
+
+### Http
+
+Rest API'lerin Http ile iletisim kurabildigini soylemistik. Http ana unsurlarini inceleyecek olursak:
+
+- Scheme: Protokoldur. Http gibi mesela.
+- Internet adresi/Base Url: www.sitem.com
+- Route: Web server uzerindeki lokasyon. .../videos/happyBDay.mp4
+
+Request atiliyor mesela, uc unsuru var bunun da:
+
+Start line, Header, Body(? opsiyonel)
+
+Response yapisi da ayni sekil. Start line'da **Status Code** da doner. **200 OK** gibi mesela.
+
+Su metotlarla Http kullanabiliriz:
+
+- Get
+- Post
+- Put
+- Delete
+
+### Python'da Requestler
+
+#### Get
+
+Request Modulu kullanilacak. Bu bi library.
+
+```py
+import requests
+
+r = requests.get("http://www.ibm.com/")
+r.status_code       # 200
+
+r.request.headers   # request header'i basar
+r.request.body      # request body
+
+r.headers       # response'un header, python dict. halinde
+r.body          # response'un body
+r.encoding      # UTF-8 mesela
+r.text[:100]    # Html dondugu icin, html'i ceker text olarak (ilk 100 karakter)
+```
+
+Response'un yapisini dictionary halinde tutmasinin soyle bir avantaji var:
+
+```py
+header = r.headers
+header["date"]          # date keyindeki degeri ceker
+header["Content-Type"]  # vs. vs.
+```
+
+Url'imizi olustururken yine query string'ler var.
+
+http:// httbin.org /get **?Name=Joseph&Id=123** gibi.
+
+Bu query parametrelerini, .get() metodumuza dictionary olarak duzgunce paslayabiliyoruz.
+
+```py
+url_get = "http://httbin.org/get"
+payload = {"name":"Jordan","id":"123"}
+r = requests.get(url_get, params=payload)
+r.url   # http://httbin.org/get?name=Jordan&id=123
+
+r.json()    # Eger content-type application/json ise
+            # Content'i python dictionary olarak doker.
+```
+
+#### Post 
+
+```py
+r_post = requests.post(url, data=payload)
+
+r_post.url  # get'te query'li url vardi. Bunda:
+            # http://httbin.org/post
+
+# Amaa bunda REQUEST body var.
+r_post.request.body # biseyler
+r_get.request.body  # None
+
+r_post.json()['form']   # burada da query gibi verdigimiz
+                        # Name & Id alanlarini goruruz.
+```
+
+#### Lab Notlari
+
+Url stringi belirlerken tek tirnakli string kullan
+
+[Requests Kaynak](#https://requests.readthedocs.io/en/master/?utm_term=10006555)
