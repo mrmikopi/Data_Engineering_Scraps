@@ -1082,3 +1082,112 @@ r_post.json()['form']   # burada da query gibi verdigimiz
 Url stringi belirlerken tek tirnakli string kullan
 
 [Requests Kaynak](#https://requests.readthedocs.io/en/master/?utm_term=10006555)
+
+## WebScraping
+
+Automaticly extract information from websites. **Requests** ve **Beautiful Soup** kutuphaneleriyle Python'da webscraping yapacagiz.
+
+**Beautiful Soup**'a HTML'i veriyorsun String olarak, o sana nested bir object olarak donuyor.
+Parse ediyor.
+
+```py
+soup = BeautifulSoup(html, 'html5lib') # ile olusturduk
+soup.title  # <title> alanini donecek:
+# <title>Page Title</title>
+```
+
+Ayni attribute isminden birden cok varsa, ilk karsisina cikani aliyor.
+
+Html yapisi bi tree'ymis de, treedeki first occurrence aliyormus gibi dusun.
+
+Tree'deki parent - child iliskisini de:
+```py
+soup.parent
+soup.next_sibling
+```
+Gibi attributelar ile cagirabilirsin.
+
+Html icindeki attribute ve ic kismi cagirmak isteyelim:
+
+```html
+<b id="boldest">Lebron James</b>
+```
+
+```py
+tag.attrs = {"id":"boldest"}    # donecektir
+tag.string = "Lebron James"     # donecektir
+```
+
+**find_all( element )** metodu ile o taga sahip olan tum elementleri **Iterable** olarak doner, liste gibi.
+
+Bu donen listeleri de **for** icinde itere edip "tum cell'leri getir" veya "tum rowlarda su elementleri dolas" seklinde isleyebiliriz.
+
+### Lab Notlari
+
+```py
+soup.prettify()
+# Html'i beautify eder
+tag_obj['id']
+# Tag'deki attribute'un value'sunu getirir
+tag_obj.get('id')
+# usttekiyle ayni
+tag_obj.attrs
+# attributelari getirir (id gibi)
+tag_obj.find_all(name = ['div', 'a'])
+# birden fazla tur tag getirir
+tag_obj.find_all(id = "flight")
+# 'id' attribute'u flight olanlari getirir.
+tag_obj.find_all(href = "www.google.com")
+# Google'a link veren tum tagleri getirir.
+tag_obj.find_all(href=True)
+# href iceren tum Tag'leri getirir
+tag_obj.find('table',class='pizza')
+# hem name arattik hem class, id de aratabilirdik.
+```
+
+- Soup'taki html'den cektigimiz her element bir **Tag** 'dir. (Orn: Tum dir'ler). Type: **bs4.element.Tag**
+
+#### Navigatable String
+
+Tag'lerin arasinda kalan o string'in tipini **NavigatableString** olarak tutuyor BeautifulSoup.
+
+#### Filtering
+
+**find_all()**
+
+Tag'in tum dallarina bakar, tutanlari getirir.
+
+**find()**
+
+Ilk buldugu Tag'i getiren fonksyon.
+
+**pandas.read_html( )**
+
+Html'deki bi tabloyu okuyup pandas DataFrame'ine yazdiracaksin mesela. Labda bisuruuu ugrasla yapabildik, column column mapping gerekiyor.
+
+Onun yerine html'i pandas'a besleyerek yapabiliriz bunu. Bi parse engine vasitasi ile yapiyor bunu tabi.
+
+```py
+pd.read_html(str(table), flavor='bs4')
+# flavor = parser
+```
+
+**read_html()** birden fazla DataFrame donebilmesi icin liste olarak doner. Sen listeden secersin :) o yuzden soyle cagirmak lazim:
+
+```py
+read_html(table, flavor='bs4')[0]
+```
+
+**read_html()** 'e **URL** de verebiliriz.
+
+Bu sefer, Url'de tablolari alip DataFrame'e ceviriyor. Sen istedigin tabloyu liste icinden seciyorsun.
+
+Elle aramak yerine **matcher** da kullanabilirsin.
+
+```py
+pd.read_html(url, match="10 most densely populated countries", flavor='bs4')[0]
+```
+
+Boylece icinde herhangi bir yerde *'10 most densely populated countries'* gecen  tablolari alacak sadece.
+
+## Working with different file formats
