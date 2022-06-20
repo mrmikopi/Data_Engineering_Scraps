@@ -1191,3 +1191,66 @@ pd.read_html(url, match="10 most densely populated countries", flavor='bs4')[0]
 Boylece icinde herhangi bir yerde *'10 most densely populated countries'* gecen  tablolari alacak sadece.
 
 ## Working with different file formats
+
+Farkli dosya formatlarini okuyabilmek icin pandas kullanacagiz.
+
+### CSV icin
+
+```py
+import pandas as pd
+file = "Example1.csv"
+df = pd.read_csv(file)
+```
+
+Ornekte, ilk satiri header satiri zannedip yazdirmis. Nasil duzeltilir?
+
+```py
+df.columns = ['Name', 'Phone', 'Birthday']
+```
+
+### JSON icin
+
+```py
+import json
+with open ('filename.json','r') as openFile:
+    json_object = json.load(openFile)
+print(json_object)
+```
+
+### XML icin
+
+```py
+import pandas as pd
+import xml.etree.ElementTree as etree
+
+tree = etree.parse('fileExample.xml')
+root = tree.getroot()
+columns = ['Name', 'Phone', 'Birthday']
+df = pd.DateFrame(columns = columns)
+
+for node in root:
+    name = node.find('name').text
+    phone = node.find('phone').text
+    bday = node.find('birthday').text
+    df = df.append(pd.Series([name,phone,bday],index= columns)
+    ..., ignore_index = True)
+```
+
+### Lab Notlari
+
+Pandas ile csv aktariyorum.
+
+```py
+df["Column Adi"]    # select Column from df gibi
+```
+
+Diyelim numpy ile olusturdugun 3x3 matrisi, DataFrame'e aktardin. Bi de header ekledin basina.
+Her Elemente 10 eklemek istesek, ne yapardik?
+
+DataFrame'lerde **transform()** fonksyonu varmis. Icine lambda notasyonlu fonksyon giriyorsun, o fonksyonu her elemana mapliyor.
+
+```py
+#applying the transform function
+df = df.transform(func = lambda x : x + 10)
+result = df.transform(func = ['sqrt'])
+```
