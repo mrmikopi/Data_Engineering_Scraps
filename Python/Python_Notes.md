@@ -1254,3 +1254,143 @@ DataFrame'lerde **transform()** fonksyonu varmis. Icine lambda notasyonlu fonksy
 df = df.transform(func = lambda x : x + 10)
 result = df.transform(func = ['sqrt'])
 ```
+
+**JSON**
+
+Key-value degerleri veya array gibi listeler icerebilir.
+Json'u dosyaya yazmaya **serialization** denir. Python'daki json library'si, **dump()** ve **dumps()** metodlarini kullanir.
+
+Iki metot da dictionary alip json'a cevirir.
+
+- dump(): yazdirilacak dosyayi input olarak alir
+- dumps(): indent sayisi kac olacak onu alir
+
+```py
+ json.dump(dict, file_pointer)  
+ # file_pointer = with open'daki file
+
+ # dump()
+ with open('person.json', 'w') as f:  # writing JSON object
+    json.dump(jsonString, f)
+
+# dumps()
+json_object = json.dumps(person, indent = 4) 
+with open("sample.json", "w") as outfile: 
+    outfile.write(json_object) 
+```
+
+**Deserialization** da, dosyadan okuma isi icin. Kullanilabilir objeler seklinde cevirmedir.
+
+**json.load(file_pointer)** kullaniabilir. Donen obje Dictionary'dir.
+
+```py
+with open('sample.json', 'r') as openfile: 
+    # Reading from json file 
+    json_object = json.load(openfile) 
+```
+
+**XLSX Dosyalari**
+
+Pandas ile okuyacagiz. Tek pd.read_excel("file")
+ile cozuluyor.
+
+**XML Files**
+
+Xml ama alan isimlerinin esit oldugunu varsayalim ki pandas dataframe'ine yazabilelim.
+
+Tree yapisini su sekilde saglariz:
+
+```py
+import xml.etree.ElementTree as ET
+
+employee = ET.Element('employee')
+details = ET.SubElement(employee, 'details')
+first = ET.SubElement(details, 'firstName')
+second = ET.SubElement(details, 'lastName')
+
+mydata = ET.ElementTree(employee)
+
+with open("dosya.xml","wb") as files:
+    mydata.write(files)
+# ile de dosyaya yazdirdik
+```
+
+DataFrame'e nasil aktaricaz?
+
+Dosyadan okuyoruz diyelim:
+
+```py
+tree = etree.parse('dosya.xml')
+root = tree.getroot()
+columns = ['firstName','lastName']
+
+df = pd.DataFrame(columns = columns)
+
+for node in root:
+    firstname = node.find('firstName').text
+    lastname = node.find('lastName').text
+
+    df = df.append(pd.Series([firstname,lastname],index=columns),ignore_index=True)
+```
+
+Veeeyaaa
+
+Pandas'daki **pd.read_xml()** ile de yapabilirmisiz. Hem catir catir calisiyor hem yazmasi daha az mesakkatli.
+
+**CSV**
+
+Pandas'da bir dataframe'i **.to_csv()** metodu ile yazdirabiliriz.
+
+index=False girmezsen bu metoda input olarak,
+yazdirdigi her satirin basina index'i de yazdirir. Eger indexin default index ise, her satirin basinda 0 1 2 filan yazar.
+
+Pandas'da read ve write icin desteklenen farkli farkli formatlar var. Csv, json, excel, hdf, sql filan ohooo...
+
+#### Binary File Format
+
+**Images**
+
+PIL yani Python Image Library kullanilacak.
+
+```py
+from PIL import Image
+
+img = Image.open('file.jpg')
+display(img)
+```
+
+#### Lab Excercise
+
+Diabet verileri olan bir csv indirildi. 
+
+```py
+df.shape    # df'in seklini gosterir
+df.info()   # df kolonlari ve rowlarla ilgili bilgiler
+df.describe()   # Kolonlarla ilgili sayisal veriler, ortalamalar maxlar minler
+df.isnull() # df'nin her cell'ini True/False seklinde null check eder
+df[column].value_counts()   # her value sayisini hesaplar
+df.dtypes   # Data Types
+df.astype(type) # verilen data type olarak doner(?)
+
+# astype kullanimi:
+data['Salary'] = data['Salary'].astype(float)
+```
+#### Visualization
+
+Asagidaki kodlar kullanildi:
+
+```py
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+labels = 'Diabetic', 'Not Diabetic'
+plt.pie(df['Outcome'].value_counts(),labels=labels,autopct='%0.02f%%')
+plt.legend()
+plt.show()
+```
+
+Konsolda bile yazinca, ayri bi pencerede matplotlib aciliyor.
+
+## CheatSheat
+
+[Link](https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBMDeveloperSkillsNetwork-PY0101EN-SkillsNetwork/handouts/Python%20Cheat%20Sheet%20-%20The%20Basics%20Coursera.pdf)
