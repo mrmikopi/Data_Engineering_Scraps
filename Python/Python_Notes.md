@@ -1032,7 +1032,7 @@ r.request.headers   # request header'i basar
 r.request.body      # request body
 
 r.headers       # response'un header, python dict. halinde
-r.body          # response'un body
+r.text          # response'un body
 r.encoding      # UTF-8 mesela
 r.text[:100]    # Html dondugu icin, html'i ceker text olarak (ilk 100 karakter)
 ```
@@ -1091,7 +1091,7 @@ Automaticly extract information from websites. **Requests** ve **Beautiful Soup*
 Parse ediyor.
 
 ```py
-soup = BeautifulSoup(html, 'html5lib') # ile olusturduk
+soup = BeautifulSoup(htmlCode, 'html5lib') # ile olusturduk
 soup.title  # <title> alanini donecek:
 # <title>Page Title</title>
 ```
