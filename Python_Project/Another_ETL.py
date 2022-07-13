@@ -17,10 +17,10 @@ columns=['Name','Market Cap (US$ Billion)']
 def extract():
     jsonDf = pd.DataFrame(columns = columns)
     jsonDf = pd.concat([jsonDf,extract_from_json(
-        'bank_market_cap_1.json')])
+        '.\\Python_Project\\Final_Files\\bank_market_cap_1.json')])
     return jsonDf
 
-df = pd.read_csv('exchange_rates.csv', names=['Rates'], header=0)
+df = pd.read_csv('.\\Python_Project\\Final_Files\\exchange_rates.csv', names=['Rates'], header=0)
 exchange_rate = df.loc['GBP'].values[0]
 print('Value of GBP is:' + str(exchange_rate))
 
@@ -34,13 +34,14 @@ def transform(df):
 
 def load(df):
     # Write your code here
-    df.to_csv('bank_market_cap_gbp.csv',index=False)
+    df.to_csv('.\\Python_Project\\Final_Files\\bank_market_cap_gbp.csv',index=False)
 
 def log(message):
     now = datetime.now()
     date = now.strftime('%Y-%m-%d')
     dateTime = now.strftime('%Y-%m-%d / %H:%M:%S')
-    logFile = date + '-Log.txt'
+    path = '.\\Python_Project\\Final_Files\\'
+    logFile = path + date + '-Log.txt'
     with open(logFile, 'a') as file:
         file.write(dateTime + '\t' + message + '\n')
 
