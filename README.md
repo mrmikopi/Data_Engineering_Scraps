@@ -1,2 +1,3 @@
 # Data Engineering Scraps
-Course notes from Coursera data engineering course
+
+Course Notes & Lab Projects for Coursera: IBM Professional Data Engineering Certificate 

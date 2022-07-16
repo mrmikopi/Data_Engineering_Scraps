@@ -4,9 +4,10 @@ Notes from videos/labs. Mostly in Turkish.
 
 ## Content
 
-1. [Introduction](#introduction)
+1. [Introduction](#week-1---introduction)
+2. []
 
-## Introduction
+## Week 1 - Introduction
 
 * Veri buyuklugu normal verilere gore buyuk. 
 * Structured, semi-structured veya unstuctured olabilir.
@@ -190,3 +191,82 @@ Finans, teknoloji ve telekomunikasyon'da cok kullanim var. Retail, government ve
 
 - CUstomer Segmentation
 - Algoritmic Trading
+
+## Week 2 - Hadoop
+
+### Hadoop Introduction
+
+Big data teknolojisi.
+Buyuk miktarda data, farkli farkli kaynaklardan gelen data ve structured & unstr. data icin ideal. Cluster'larda paralel calisabilir.
+
+Bir DB Degil, data isleme ortami gibi.
+
+* HDFS : Storage module. 
+* MapReduce: Processing unit.
+* YARN: Resource manager.
+
+Kotu yanlari:
+
+- Transaction processing
+- Parallel degil de lineer isler
+- Datada dependency varsa
+- Low latency data access
+- Cok sayida kucuk dosya varsa (MapReduce'un bazi ozellikleri bunun icin gelistirildi)
+- Little data uzerinde Intensive calculations (Hive daha iyi)
+
+### MapReduce
+
+Big Data isleyicisi. Hadoop'un kalbi. Distrubuted computing saglar. Map ve Reduce tasklarindan olusur (tabi ki).
+
+Map: Input file alir (hdfs'ten mesela), bilgileri key-value listesi olarak map halinde saklar. Bikac islem daha yapar.
+
+Reducer'a iletilir. Reduce de paralel sekilde derliyor topluyor isliyor.
+
+**Isleyisi:**
+
+'isimler' datasinda kac tane ozgun isim oldugunu bulan akis:
+
+![MapReduce_Diagram](resource/MapReduce_Diagram_1.png)
+
+**Neden MapReduce Kullanalim?**
+
+- Parallel Computing saglar node'lar arasinda. Name ve Data Node'lari olur Hadoop'ta
+- Splitting and running tasks in parallel
+
+**Use Case'ler**
+
+- Sosyal medya uygulamalari
+- Recommendations data
+- Financial Industries
+- Advertisements (cok severiz malum)
+
+### Hadoop Ecosystem
+
+Hadoop Common - Common utilities and other modules. Orn:
+
+- HDFS
+- MapReduce
+- YARN
+
+![Hadoop Ecosystem](resource/Hadoop_Ecosystem_1.png)
+
+**Ingesting:**
+
+- Flume: Big Data toplar ve iletir. Basit ve esnek bir mimarisi vardir
+- Sqoop: Relational Db datasi toplar ve hadoop'a iletir. Ayrica ilgili MapReduce kodlarini da olusturup uretiyormus. Hdfs islerini de hallediyor sanirim(?). Db accessi oldugu icin schema'lari anliyor.
+
+**Store data:**
+
+- HBase: Column based sekilde non-relational databasedir. Hdfs uzerinde calisir. Datayi hashmapler, yani indexler, halinde saklayip random access-faster access saglar.
+- Cassandra: Bir NoSQL db'dir.
+
+**Analyzing data:**
+
+- Pig: Large data analyzer. Prosedurel data flow language'i var.
+- Hive: Report creating. Server side calisir. Kullanici erismek istedigi datayi secer: declerative'dir.
+
+**Access data:**
+
+- Impala: Non-tech userlarin kullanimini saglar.
+- Hue: Hadoop User Experience'in kisaltmasi. Data upload, browse ve query islemleri saglar. Pig islerini ve akislarini calistirabilir. Hive ve MySql icin SQL query destegi saglar.
+
