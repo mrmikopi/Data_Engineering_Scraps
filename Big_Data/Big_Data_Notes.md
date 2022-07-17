@@ -4,10 +4,12 @@ Notes from videos/labs. Mostly in Turkish.
 
 ## Content
 
-1. [Introduction](#week-1---introduction)
-2. []
+1. [Week 1 - Introduction](#week-1---introduction)
+2. [Week 2 - Hadoop](#week-2---hadoop)
 
 ## Week 1 - Introduction
+
+### Big Data Nedir
 
 * Veri buyuklugu normal verilere gore buyuk. 
 * Structured, semi-structured veya unstuctured olabilir.
@@ -56,12 +58,12 @@ O yuzden, boyle toplu islemleri yapmak icin bi node'un olacak. Verinin ilgili ki
 
 ### Tools and Ecosystem
 
-- Data Tech
-- Analytucs and Visualization
-- Business Intelligence
-- Cloud Providers
-- NoSql Dbs
-- Programming Tools
+- [Data Tech](#data-tech)
+- [Analytics and Visualization](#analytics-and-visualization)
+- [Business Intelligence](#business-intelligence)
+- [Cloud Providers](#cloud)
+- [NoSql Dbs](#nosql-databases)
+- [Programming Tools](#programming-tools)
 
 #### Data Tech
 
@@ -270,3 +272,105 @@ Hadoop Common - Common utilities and other modules. Orn:
 - Impala: Non-tech userlarin kullanimini saglar.
 - Hue: Hadoop User Experience'in kisaltmasi. Data upload, browse ve query islemleri saglar. Pig islerini ve akislarini calistirabilir. Hive ve MySql icin SQL query destegi saglar.
 
+### HDFS
+
+Buyuk datayi bloklar halinde replike ederek saklar. Fault tolerant da oluyormus boylece. Scale etmesi de kolay ve ucuz.
+
+Streaming data access'i sunuyormus.
+
+Ayrica bir CLI sunuyormus interaksiyon icin.
+
+**Blocklar** calisiyor. 64 mb veya 128 mb chunklar halinde tutuyor blocklari. Daha az kalirsa bi bloga, daha az olabilir tabi.
+
+Block is a minumum size of a file (dolmayabilir)
+
+**Nodes**
+
+Calisan her bi makina gibi dusunelim. Primary ve Secondary Node'lar var.
+
+**Primary Node:** aka. Name Node. File access'i duzenler. Secondary node'un tasklarini yonetir. Her CLUSTER'da 1 tane.
+
+**Secondary Node:** aka. Data Node. Read Write requestlerini gerceklestirir. Cokca olabilir.
+
+Primary node, is ustlendigi zaman kendisine en yakin rack'leri onceliklendirir. Maximizing efficiency.
+
+*Rack: 40 veya 50 adet, ayni networku kullanan node toplulugu*
+
+Rack awareness calisiyor Hadoop. Onceliklendirme yaptigi gibi, ayrica replikasyon yapilan rack'leri de farkli tutuyor ki fault proof devam.
+
+**Replication demisken:**
+
+Backup amaclidir. Replication factor: Bir block'un kac kere replike edilecegi.
+
+#### Write once, read many times
+
+HDFS'in dosya konsepti. Editing updatingden ziyade append usulu.
+
+**Read** icin: Client datanin oldugu node'u bulmak icin istek atar. Read requestini ilgili node'a atar(?). Close connection.
+
+**Write** icin: Yazdirilmak istenen file var mi diye bakilir. Varsa IO Exception. Yoksa yetkilendirilir. Yazma islemi, replikalarin yazilmasiyla sonlanir.
+
+### HIVE
+
+Structured/Tabular data icin **warehouse software**. Read/write/manage islerini yapabiliyor. SQL gibi HiveQL'i var. Cleansing ve filtering destekliyor
+
+**RDBMS'le kiyaslanisi:**
+
+![Hive vs RDBMS](resource/Hive_Architecture_1.png)
+
+**Mimarisi:**
+
+![Hive Architecture](resource/Hive_Architecture_2.png)
+
+- JDBC/ODBC Client: Java applerini / ODBC applerini Hive'a baglayan clientlar.
+
+- Hive Services:
+    - Hive Server: Enabling Queries
+    - Driver: Recieves query statements
+    - Optimizer: Tasklari boler
+    - Executor: Optimizer'dan aldigi tasklari calistirir
+    - Metastore: Metadata storage
+
+### HBase
+
+Column base non-relational **bir database.** HDFS uzerinde calisir. Real time data ve random read/write access of Big Data islerinde iyiymis.
+
+**Features:**
+
+- Linearly & modularly scalable
+- MapReduce isleri icin bir backup support
+- Consistent reads and writes
+- No fixed column schema
+- Kullanici erisimi icin kolay bir Java API'i
+- *Cluster'lar arasi* data replikasyonu da saglar
+
+Column diyoruz da bildigin column iste. Ama kolonlari tek tek degil, bazilarini column family olarak grupluyor. Family'lere sonradan kolon eklenebiliyor. 
+
+HBase'in de primary node / region server olarak iki nodu cesidi var.
+
+**HBase ve HDFS Kiyaslamasi**
+
+HBase dinamik degisikliklere izin veriyor, burasi onemli. Sadece write/read degil.
+
+![HBase vs HDFS](resource/HBase_Comparison_1.png)
+
+#### HBase Mimarisi:
+
+![HBase Architecture](resource/HBase_Architecture_1.png)
+
+- HMaster: Master Server.
+    - Region serverlari monitor eder
+    - Region serverlara region atar
+    - Schemalara yapilan degisiklikleri yonetir
+- Region Servers:
+    - Read Write requestleri alir.
+    - Regionlari yonetirler
+    - Client ile direkt kontakt kurabilir.
+- Region:
+    - En kucuk HBase cluster birimi
+    - Contains multiple stores. Her column family icin bir store.
+    - HFile ve MemStore diye iki componenti varmis :(
+- Zookeeper:
+    - Node'lar arasi baglari maintain eder (hdfs diye nodelar var)
+    - Daginiklikta senkronizasyon saglar
+    - Server failure'lari tespit eder, islemleri yapar.
