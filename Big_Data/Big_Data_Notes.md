@@ -374,3 +374,19 @@ HBase dinamik degisikliklere izin veriyor, burasi onemli. Sadece write/read degi
     - Node'lar arasi baglari maintain eder (hdfs diye nodelar var)
     - Daginiklikta senkronizasyon saglar
     - Server failure'lari tespit eder, islemleri yapar.
+
+### Hadoop & MapReduce Lab Example
+
+Indirilen dosyalari, onceden olusturulmus bir 'wordCounter' mapReduce ile calistirdik.
+Sonuc olarak bize bi *_SUCCESS* dosyasi, bi de *part-r-00000* dosyasi olustu.
+Part-r olanda word count vardi.
+
+Su komut ile programi calistirdik:
+
+```sh
+bin/hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.2.3.jar wordcount data.txt output
+```
+
+Ornegin calisma akisi su sekilde:
+
+![Map Reduce Akisi](resource/map_reduce_picture_rep.png)
