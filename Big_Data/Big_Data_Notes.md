@@ -6,6 +6,7 @@ Notes from videos/labs. Mostly in Turkish.
 
 1. [Week 1 - Introduction](#week-1---introduction)
 2. [Week 2 - Hadoop](#week-2---hadoop)
+3. [Week 3 - Spark](#week-3---spark)
 
 ## Week 1 - Introduction
 
@@ -478,3 +479,39 @@ Quick access icin.
     - Node manager
     - Resource manager
     - Hadoop History Server
+
+## Week 3 - Spark
+
+Onemli ozellikler:
+
+- Open source
+- In-memory
+- Distributed data processing
+- Iterative analysis on Massive data
+- Genelde Scala'da yazilir. Scala JVM'de calisir.
+
+**Distributed != Parallel**
+
+- Parallel: Farkli processorler, ayni memory
+- Distributed: Processorlerin kendi memoryleri olabilir, daginik memoryler olabilir.
+
+**Distributed'in faydalari:**
+
+- Scalability ve modular growth
+- Fault tolerance and redundancy
+
+**MapReduce'a kiyaslanisi:**
+
+MapReduce isinde diske veya HDFS'e yapilan read'ler write'lar olurdu.
+
+Spark bunu gerekli datayi in-memory yaparak cozuyor.
+Disk IO'lari expensive ve time consuming imis.
+
+Data Engineering icin kullanilan Spark urunleri:
+
+- Core Spark Engine
+- Clusters and executors
+- Cluster Management
+- SparkSQL
+- Catalyst Tungsten DataFrames
+
