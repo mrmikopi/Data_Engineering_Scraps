@@ -288,15 +288,21 @@ Block is a minumum size of a file (dolmayabilir)
 
 Calisan her bi makina gibi dusunelim. Primary ve Secondary Node'lar var.
 
-**Primary Node:** aka. Name Node. File access'i duzenler. Secondary node'un tasklarini yonetir. Her CLUSTER'da 1 tane.
+- **Primary Node:** aka. Name Node. File access'i duzenler. Secondary node'un tasklarini yonetir. Her CLUSTER'da 1 tane.
 
-**Secondary Node:** aka. Data Node. Read Write requestlerini gerceklestirir. Cokca olabilir.
+- **Secondary Node:** aka. Data Node. Read Write requestlerini gerceklestirir. Cokca olabilir.
 
 Primary node, is ustlendigi zaman kendisine en yakin rack'leri onceliklendirir. Maximizing efficiency.
 
-*Rack: 40 veya 50 adet, ayni networku kullanan node toplulugu*
+**Racks**
+
+Rack: 40 veya 50 adet, ayni networku kullanan node toplulugu
 
 Rack awareness calisiyor Hadoop. Onceliklendirme yaptigi gibi, ayrica replikasyon yapilan rack'leri de farkli tutuyor ki fault proof devam.
+
+**Boyuta gore siralama:**
+
+Blocks -> Nodes -> Racks -> Cluster
 
 **Replication demisken:**
 
@@ -377,6 +383,10 @@ HBase dinamik degisikliklere izin veriyor, burasi onemli. Sadece write/read degi
 
 ### Hadoop & MapReduce Lab Example
 
+*Bu ve sonraki lablarda, 
+hadoop ortamini windows'ta kurmakta sorunlar yasadim.
+labaratuvar uzerinden ilerledim sadece*
+
 Indirilen dosyalari, onceden olusturulmus bir 'wordCounter' mapReduce ile calistirdik.
 Sonuc olarak bize bi *_SUCCESS* dosyasi, bi de *part-r-00000* dosyasi olustu.
 Part-r olanda word count vardi.
@@ -390,3 +400,81 @@ bin/hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.2.3.jar wordco
 Ornegin calisma akisi su sekilde:
 
 ![Map Reduce Akisi](resource/map_reduce_picture_rep.png)
+
+### Hadoop Cluster Example Lab
+
+Dockerize hadoop kullanip hadoop Cluster yaratacagiz.
+
+Indirilen git reposunda su komutla docker calistirildi:
+
+```sh
+docker-compose up -d
+```
+
+Docker-compose, bi YAML dosyasi icindeki servisleri olusturup calistirir.
+Calistirinca soyle oldu:
+
+```
+ ⠿ Network ooxwv-docker_hadoop_default                Created   0.2s
+ ⠿ Volume "ooxwv-docker_hadoop_hadoop_namenode"       Created   0.0s
+ ⠿ Volume "ooxwv-docker_hadoop_hadoop_datanode"       Created   0.0s
+ ⠿ Volume "ooxwv-docker_hadoop_hadoop_historyserver"  Created   0.0s
+ ⠿ Container namenode                                 Started   5.3s
+ ⠿ Container resourcemanager                          Started   3.0s
+ ⠿ Container nodemanager                              Started   4.4s
+ ⠿ Container datanode                                 Started   5.3s
+ ⠿ Container historyserver                            Started   3.5s
+ ```
+
+Sonra asagidaki komutla nameNode'u calistirmisiz:
+
+```
+docker exec -it namenode /bin/bash
+```
+
+Hadoop'u kullanmak icin config dosyalari editleniyor. Bu dosyalardan bazisi:
+
+- hadoop-env.sh: Masterfile. Yarn, hdfs, mapreduce ve hadoop ayarlarini ayarlar.
+- core-site.xml: Hdfs ve Hadoop core ozelliklerini ayarlar.
+- hdfs-site.xml: Node metadatasinin lokasyonunu, fsimage dosyasini ve log dosyasini kontrol eder.
+- mapred-site.xml: MapReduce config parametreleri
+- yarn-site.xml: Yarn ayarlari. Node manager, resource manager, containerlar ve Application master ayarlari vardir.
+
+Hdfs icinde bir **directory yarattik**:
+
+    hdfs dfs -mkdir -p /user/root/input
+
+Hadoop config xml dosyalarini input klasorune kopyaladik:
+
+    hdfs dfs -put $HADOOP_HOME/etc/hadoop/*.xml /user/root/input
+
+data.txt dosyasi cektik internetten. Onu da */user/root* a kopyaladik:
+
+    hdfs dfs -put data.txt /user/root/
+
+*cat* ile dosya icerigine baktik, kopyaladigimizi teyit ettik:
+
+    hdfs dfs -cat /user/root/data.txt
+
+Bu noktada, calisan hadoop uygulamasina girecektik.
+Ama kurstaki uygulama icinden calistiramadim aplikasyonu.
+Gorsellere bakarak devam ediyorum.
+
+Utilities -> Browse file system ile ilerlendiginde,
+az once yarattigimiz dosyalari gorebiliyoruz.
+data.txt dosyasini ve block sizelerini da goruyoruz:
+
+![Hdfs directory browse](resource/browse_directory.png)
+
+Dosyaya tikladigimizda, block id'sini filan da gorebiliyoruz.
+
+**Notlar:**
+
+- Name Node, sakladigi dosyalarin metadatasini memory'de tutar. 
+Quick access icin.
+- Hadoop cluster'imizda sunlar olacak:
+    - Name node
+    - Data node
+    - Node manager
+    - Resource manager
+    - Hadoop History Server
