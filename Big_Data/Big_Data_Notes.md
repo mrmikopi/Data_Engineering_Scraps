@@ -515,3 +515,93 @@ Data Engineering icin kullanilan Spark urunleri:
 - SparkSQL
 - Catalyst Tungsten DataFrames
 
+### Functional Programming Basics
+
+- Matematiksel fonksyonlari temel alir
+- Declarative model izler
+- 'Nasil' odakli degil de 'ne' odaklidir. Input ve output odaklidir.
+- Statementlar yerine expressionlar kullanir
+
+Ayrica tasklarimizi node node ayirip parallelization da yapabiliriz(?).
+Spark, inheritly parallel.
+
+### Parallel Programming using RDD
+
+**RDD:** Resillient Distributed Datasets.
+
+- Spark'in temel data abstraction metodu.
+- Fault tolerant collection of elements.
+- Cluster icindeki node'lara partition'lanir.
+- Parallel operasyonlari calistirabilir.
+- **Immutable'dir**. Olustuktan sonra degistirilemez. Degistirilmesi teklif dahi edilemez.
+
+Spark'ta bir 'driver program' calisir. 
+Kullanicinin temel islemlerini gerceklestirir.
+Parallel operasyonlari da cluster'lara uygular.
+
+RDD supports file types:
+
+- Text
+- SequenceFiles
+- Avro
+- Parquer
+- Hadoop input formats
+
+RDD Supports file formats:
+
+- Local
+- Cassandra
+- HBase
+- HDFS
+- Amazon S3
+- SQL and NoSql
+
+**RDD Olusturma**
+
+External veya local file'i, Hadoop-Supported systemlerden alip olusturabiliriz.
+
+HDFS, Hbase, S3 veya Cassandra RDD yaratimi icin yardimci olabilir.
+
+**VEYA**
+
+Kodumuzdaki collection'lardan da basitce olusturabiliriz.
+
+```scala
+val data = Array(1,2,3,4,5)
+val distData = sc.parallelize(data)
+```
+
+Aha da RDD olusturduk driver-programdeki listeden. Python veya java'dan da yapabilirdik.
+
+Dosyayi RDD'lestirmek konusunda, partitioning giriyor isin icine.
+Kac partition olacak? Spark her partition icin 1 task calistirir.
+
+Her CPU'ya 4 5 partition genelde okey.
+Spark cluster'a gore otomatik sayida partition olusturur.
+Biz manuel de verebiliriz.
+
+**VEYA**
+
+Mevcut bir RDD'yi modifiye edip de yeni bir RDD olusturabiliriz (cunku immutable)
+
+#### Parallel Programming:
+
+Cok sayida islem gucunun es zamanli kullanilip, computational problem cozmesi. Distributed gibi.
+
+Runs simultaneous instructions on multiple processors.
+
+Memory shared olarak kullanilir, distributed'den farkli olarak.
+
+Control/coordination mekanizmasi kurar.
+
+**RDD ile iliskisi**
+
+RDD olustururken partitioning ile bolmustuk datayi.
+Her partition worker'larda memory'de tutulur. 
+Spark, cluster'daki *her partition icin bir task calistirir*.
+
+**Nasil Resillience sagliyor?**
+
+- Immutable oluslari **always recoverable** yapiyor datayi.
+- **Persist & Cache** islemleri ile memory'de iterative isleri hizlandirir ve fault-tolerance saglar. (?)
+
