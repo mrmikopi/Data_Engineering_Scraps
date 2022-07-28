@@ -605,3 +605,178 @@ Spark, cluster'daki *her partition icin bir task calistirir*.
 - Immutable oluslari **always recoverable** yapiyor datayi.
 - **Persist & Cache** islemleri ile memory'de iterative isleri hizlandirir ve fault-tolerance saglar. (?)
 
+### Spark'ta parallelism ve Scaling out
+
+Spark'in 3 temel componenti:
+
+- Data Storage: HDFS veya baska formatlar.
+- Compute Interface: API'lar: Scala/Java/Python
+- Management: Distributed isleri yonetir. Clusterlari filan. Mesos, YARN, Kubernetes vs.
+
+**Spark Core:**
+
+Base engine'dir. Ozellikleri:
+
+- Fault tolerant
+- Large scale parallel ve distributed data processing
+- Manages memory
+- Schedules tasks
+- Houses API's that defines RDD's
+- Contains distributed collection of elements that are oarakkekized across the cluster
+
+**Spark'in nasil scale oldugu** de soyle aciklanmis:
+
+- Driver Node
+- Executor Node
+
+Bu iki node arasinda patron/calisan iliskisi var.
+
+Driver node tasklari yonetip distributed olarak pay eder.
+Executor'de de *Worker Node*lar bu pay edilmis isleri ustlenip sonuclari geri Driver'a iletirler. Resimli olarak:
+
+![Spark Driver and Executor Node](resource/Spark_Driver_Executor.png)
+
+Bu Worker Node'lari artir dur istedigin kadar. Spark is gucu olarak onlara dagitsin isleri. Bu sayede big dataya scale ediliyor.
+
+### SparkSQL ve DataFrames
+
+
+#### SparkSQL
+
+- **Structured** data processing modulu.
+- Query icin SQL veya baska DataFrame API'lari kullanabilir.
+- Java, Scala, Python ve R'da kullanilabilir.
+- Kullanilan programlama dilinden veya API'lardan *bagimsiz* olarak SQL querylerini import edilen data uzerinde veya RDD uzerinde calistirir.
+
+```py
+results = spark.sql(
+    "SELECT * FROM people")
+# people'i onceki satirlarda register etmen gerekiyormus
+names = results.map(lambda p: p.name)
+```
+
+**SparkSQL Faydalari**
+
+- Cost-based optimizer'i, columnar storage'i, code generation'u var.
+Bunlar fast query times demek.
+- Spark Engine ile buyuk sayilara scale ettigi icin fault-tolerance.
+- DataFrame abstractionunu sunar. Ayrica distributed SQL query engine olarak da calisir.
+
+#### DataFrames
+
+Python DataFrame'ine benziyor ama zengin optimizasyonlusu. Aslinda RDBMS Tablolarina benziyor.
+
+RDD API'si uzerine kurulmustur. RDD'leri relational query atabilmek icin kullanir.
+
+Python uzerinde json -> DataFrame olusturulmasi:
+
+```py
+df = spark.red.json('people.json')
+df.show()
+df.printSchema()
+
+# Register the dataframe as temp SQL view.
+df.createTempView('people')
+# Artik tablo gibi kullanabiliriz people'i.
+```
+
+- DF'ler epey scalable'dir.
+- Cokca data formatina ve storage system'e destegi var
+- Optimizasyonu ve code generation'u gucludur (SQL Catalyst optimizer)
+- Big data toollari ve infrastructure'lari ile Spark sayesinde erisilebilir.
+- Python, Java, Scala ve R'da API'lari mevcut.
+
+**DataFrame kullanimiyla SparkSQL'i kiyaslayalim:**
+
+SparkSQL:
+
+```py
+spark.sql("SELECT age, name FROM people WHERE age > 21").show()
+```
+
+DataFrame Python API
+
+```py
+df.filter(df["age"]>21).show()
+```
+
+Ikisi de tablo olarak sonuc dondurecektir.
+
+### Spark Labaratuvar
+
+Spark normalde Scala uzerinde yazilmis. 
+Python'dan PySpark kullanabiliriz tabi, ama bu python'un JVM'e erismesi demek.
+JVM'e git geller kodu yavaslatabiliyor.
+Buna istisna olarak SparkSQL'i gosterebiliriz, cunku query'leri precompile ediyor. Execution planning engine'i guclu.
+
+Bu PySpark yavasligini minimuma indirgemek icin:
+
+- 'Out of the box' metotlari agirlikli kullanmak lazimmis. Ne demekse...
+- Spark metotlarina iterative/frequent call spamlamamak lazim.
+
+Performans isteyen Scala'ya gitsin.
+
+---
+
+SparkContext ve SparkSession yaratilacak.
+Sonrasinda RDD olusturulacak ve temel aksiyonlar denenecek.
+
+**SparkContext**, Spark'in giris noktasidir. RDD yaratimi icin kullanilan fonksyonlari icerir. **parallelize()** gibi.
+
+**SparkSession**, SparkSQL ve DataFrame operasyonlari icin gereklidir.
+
+Session'u baslattiktan sonra sira RDD'lerde.
+**RDD**ler Spark'in ilkel data soyutlama bicimidir. Fonksyonel programlamadan konseptler kullanarak olusturup manipule edecegiz.
+
+Lab'da **parallelize()** kullanarak RDD olusturuluyor.
+
+#### Lazy Evaluation & Transformations
+
+RDD'ler Immutable demistik. Bu yuzden RDD'lerde islem yapacaksan (map, filter gibi) yeni RDD'ler olusturarak yapiyorsun.
+
+Spark, bu transformation'lari RDD olustururken yapmiyor. 
+RDD'ye ilistiriyor bu islemleri. Sen sonuclari cagiracak oldugunda aksiyonlar aliniyor. Sonuclari Driver'a cagirip doner.
+Buna **Lazy Evaluation** denir.
+
+Transformation'u cagirmak icin **collect()** cagrilir.
+
+#### Caching
+
+Bi RDD'yi **.cache()** ile cache'lersen, onda yapacagi ilk islemde cache'e de aktarim yapar.
+Ayni islemi tekrar cagiracak ol mesela, hopp artik kisa surede yapacak.
+
+#### DataFrames ve SparkSQL
+
+SparkSQL'le calisabilmek icin Spark Session gerekli. Labin basinda kontrol ettik hemen.
+
+**read.json()** ile basitce DF'e aktarabiliriz json dosyalayini.
+
+DataFrame'leri SQL icin temp view'lara donusturebiliriz.
+Bu sayede query icinde *FROM* alanina ekleyebiliriz.
+
+Kodda SQL queryleri ile de sonuclari cekebiliriz,
+DataFrame'in kendi metotlarini da kullanabiliriz.
+
+#### Orneklere notlar:
+
+**Q2 -** TempView yarattim soru icin. 
+Ama komutu tekrar calistiracagimda ayni tempView mevcut diye hata veriyor.
+
+Silip tekrar yukleyebilmek icin: **spark.catalog.dropTempView(...)** metodunu cagirdim.
+
+**Q3 -** Spark Session'u kapatmamizi istemis.
+
+Spark Session'larini hep kapatmak lazim best practice icin.
+Resource paylastirma isleri icin lazim genelde.
+
+Pekiii, **context'i kapatmali miyiz?**
+
+Gerekli  degil. Yenisini yaratacaksan kapatman lazim mevcut olani. Onun disinda kalsin.
+
+**SparkContext ile SparkSession farklari nedir?**
+
+Aslinda ilk SparkContext yaratiliyor. Sonra SparkSession olusturuldugunda pek cok utility buraya aliniyor.
+
+Su an, RDD yaratimi icin **SparkContext** (variable'i genelde **sc**),
+
+Kalan islere de **SparkSession** (variable'i genelde **spark**) kullandim gibi.
