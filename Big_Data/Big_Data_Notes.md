@@ -7,8 +7,17 @@ Notes from videos/labs. Mostly in Turkish.
 1. [Week 1 - Introduction](#week-1---introduction)
 2. [Week 2 - Hadoop](#week-2---hadoop)
 3. [Week 3 - Spark](#week-3---spark)
+4. [Week 4 - DataFrames & SparkSQL](#week-4---dataframes--sparksql)
 
 ## Week 1 - Introduction
+
+1. [What is Big Data](#big-data-nedir)
+2. [5V of Big Data](#5-v-of-big-data)
+3. [Impact of Big Data](#impact-of-big-data)
+4. [Parallel Processiong & Scalability](#parallel-processing--scalability)
+5. [Tools and Ecosystem](#tools-and-ecosystem)
+6. [Open Source and Big Data](#beyond-the-hype)
+7. [Beyond the Hype](#beyond-the-hype)
 
 ### Big Data Nedir
 
@@ -196,6 +205,15 @@ Finans, teknoloji ve telekomunikasyon'da cok kullanim var. Retail, government ve
 - Algoritmic Trading
 
 ## Week 2 - Hadoop
+
+1. [Introduction](#hadoop-introduction)
+2. [MapReduce](#mapreduce)
+3. [Hadoop Ecosystem](#hadoop-ecosystem)
+4. [HDFS](#hdfs)
+5. [HIVE](#hive)
+6. [HBase](#hbase)
+7. [Hadoop and MapReduce Lab Example](#hadoop--mapreduce-lab-example)
+8. [Hadoop Cluster Lab Example](#hadoop-cluster-example-lab)
 
 ### Hadoop Introduction
 
@@ -481,6 +499,16 @@ Quick access icin.
     - Hadoop History Server
 
 ## Week 3 - Spark
+
+1. [Introduction](#introduction-to-spark)
+2. [Functional Programming Basics](#functional-programming-basics)
+3. [Parallel Programming Using RDD](#parallel-programming-using-rdd)
+4. [Parallelism in Spark and Scaling Out](#sparkta-parallelism-ve-scaling-out)
+5. [SparkSQL and DataFrames](#sparksql-ve-dataframes)
+6. [Spark Lab Example](#spark-labaratuvar)
+7. [Spark Highlights](#week-3-spark-highlights)
+
+### Introduction to Spark
 
 Onemli ozellikler:
 
@@ -781,7 +809,7 @@ Su an, RDD yaratimi icin **SparkContext** (variable'i genelde **sc**),
 
 Kalan islere de **SparkSession** (variable'i genelde **spark**) kullandim gibi.
 
-#### Week 2 Spark Highlights
+### Week 3 Spark Highlights
 
 Spark is an open source in-memory application framework for distributed data processing and iterative analysis on massive data volumes​. Both distributed systems and Apache Spark are inherently scalable and fault tolerant. ​Apache Spark solves the problems encountered with MapReduce by keeping a substantial portion of the data required in-memory, avoiding expensive and time-consuming disk I/O.​
 
@@ -794,3 +822,6 @@ Resilient distributed datasets, or RDDs, are Spark’s primary data abstraction�
 Apache Spark architecture consists of components data, compute input, and management​. The fault-tolerant Spark Core base engine performs large-scale Big Data worthy parallel and distributed data processing jobs, manages memory, schedules tasks, and houses APIs that define RDDs​.
 
 Spark SQL provides a programming abstraction called DataFrames and can also act as a distributed SQL query engine​. Spark DataFrames are conceptually equivalent to a table in a relational database or a data frame in R/Python, but with richer optimizations​.
+
+## Week 4 - DataFrames & SparkSQL
+
