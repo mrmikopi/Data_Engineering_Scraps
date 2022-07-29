@@ -825,3 +825,61 @@ Spark SQL provides a programming abstraction called DataFrames and can also act 
 
 ## Week 4 - DataFrames & SparkSQL
 
+1. [RDD's in Parallel Programming and Spark](#rdds-in-parallel-programming-and-spark)
+
+### RDD's in Parallel Programming and Spark
+
+Primary Data Abstractionumuzdu. 
+Node'lara partitionlanir.
+
+#### Transformations
+
+- Aslinda eski RDD'den yenisini olusturarak yapilir.
+- Lazy evaluation vardir, action olmadikca computation olmaz.
+
+**Actionlar**
+
+Driver programa transformation sonuclarını donen islemlerdir.
+Ornek:
+
+```py
+.reduce()
+.collect()
+```
+
+RDD'lerin Transformation'lari islemesini **Directed Acyclic Graph (DAG)** semasina bagliyorlar.
+
+**DAG:**
+
+- Grafiksel data structure. Kenarlar ve koseler var.
+- Her yeni kenar eski bi koseden olusturulur
+- Koseler: RDD'leri
+- Kenarlar: Operasyonlari temsil eder.
+- Fault tolerance sagladigi icin kullanilir. Node'lardan biri giderse, Spark bu DAG'i replike eder ve node'u kurtarir.
+
+**Akis semasi**
+
+1. RDD yaratilirken Spark DAG de yaratir.
+2. Spark DAG Schedular'i acar, transformation'u yapip DAG'i gunceller.
+3. DAG artik yeni bir RDD'yi isaret ediyor.
+4. RDD'yi transform eden pointer Spark Driver Program'a doner.
+5. Action olursa, aksiyonu cagiran Driver program sadece aksiyon bittiginde DAG'i isler.
+
+**Transformation Examples**
+
+- **map()** her elementi verilen fonksyondan gecirip yeni bir distributed dataset olusturur.
+- **filter()** selection kosuluna uyan yeni bir dataset doner
+- **distinct()** Distinct elementlerden olusan yeni bir dataset doner
+- **flatmap()** her input elemanini sifir veya daha fazla output elemanina map'leyebilir. icine pasladigimiz fonksyon tek bir item yerine **Seq** donmelidir.
+
+**Action Examples**
+
+- **reduce()** icine paslanan *func*a gore aggregate eder.
+- **take()** ilk *n* elemani return eder. (n:input)
+- **collect()** Tum elemanlari array olarak doner.
+    - Make sure that ? will fit in driver program
+- **takeOrdered()** N kadar elemani ya asc sirali doner ya da icine pasladigin fonksyona gore dondurur.
+
+**Akis Gorseli**
+
+![Transformations and Actions](resource/Spark_Transformation_Action.png)
