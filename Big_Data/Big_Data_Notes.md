@@ -883,3 +883,62 @@ RDD'lerin Transformation'lari islemesini **Directed Acyclic Graph (DAG)** semasi
 **Akis Gorseli**
 
 ![Transformations and Actions](resource/Spark_Transformation_Action.png)
+
+### DataFrames and DataSets
+
+#### DataSets
+
+Spark'in data abstractionlarindan en yenisi.
+Distributed data icin API saglar, RDD ve DataFrame gibi.
+**Strongly typed jvm objeleri**dir.
+Yani, **type-safe**dir. Olusturulurken datatype'i atanir.
+Bu sebeple sadece Java ve Scala icinden API'i cagrilabilir.
+Python gibi dillerin dynamic data-type(?)i var diye kullanim yapilamaz.
+RDD'lerin faydalarini (lambda func., type safety) ve SQL'in faydalarini (optimization) beraber saglar.
+
+**Ozellikleri**
+
+- Immutable: Silinemez veya kaybedilemez. RDD gibi.
+- JVM objelerini tablo gosterimine ceviren bir encoderi vardir.
+- DataFrame API'ini extend eder.
+    - DataFrame = Dataset[Row] # Row: generic untyped JVM object.
+    - Dataset = Dataset[T]     # T: Strongly typed JVM object.
+
+**DataFrame veya RDD'ye gore avantajlari**
+
+- Compile-time type safety
+- Compute faster than RDD's. Ozellikle aggregate queryler icin.
+- SparkSQL'in ve DataFrame'lerin faydalarini beraber getirir
+- Catalyst ve Tungsten'in faydalariyla query optimization saglar.
+- Improved memory usage and caching.
+    - Cunku data-type'a gore structure olusturup memory'de optimizasyon direkt.
+- High level aggregate functions saglar:
+    - Sum
+    - Average
+    - Join
+    - Group By
+
+**Creating a DataSet**
+
+```scala
+// Create dataset from a sequence of Primitive Datatype (string mesela)
+val ds = Seq("Alpha","Beta","Gamma").toDS()
+
+// Create dataset from a file for primitive dataType
+val ds_string = spark.read.text("file.txt").as[String]
+
+// Create a dataset from a file for a custom datatype
+case class Customer(name: String, id: Int, phone: Double)
+val ds_customer = spark.read.json("customer.json").as[Customer]
+```
+
+**DataSet vs DataFrame**
+
+DataSet | DataFrame
+--------|----------
+Strongly typed | not typesafe
+Unified Java and Scala APIs | Use APIs in Java, Scala, Python and R
+Introduced Later | Introduced Earlier
+Built on top of DataFrames | Built on top of RDDs
+
+
