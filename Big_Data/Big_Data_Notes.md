@@ -826,6 +826,8 @@ Spark SQL provides a programming abstraction called DataFrames and can also act 
 ## Week 4 - DataFrames & SparkSQL
 
 1. [RDD's in Parallel Programming and Spark](#rdds-in-parallel-programming-and-spark)
+2. [SparkSQL & Catalyst & Tungsten](#sparksql--catalyst--tungsten)
+3. [ETL with DataFrames](#etl-with-dataframes)
 
 ### RDD's in Parallel Programming and Spark
 
@@ -940,5 +942,180 @@ Strongly typed | not typesafe
 Unified Java and Scala APIs | Use APIs in Java, Scala, Python and R
 Introduced Later | Introduced Earlier
 Built on top of DataFrames | Built on top of RDDs
+
+### SparkSQL & Catalyst & Tungsten
+
+Optimizasyondan hedeflerimiz:
+
+- Reduce Query Time
+- Reduce Memory Consumption 
+- Save organizations time and money
+
+Catalyst ve Tungsten de Spark'in built-in optimizer'lari.
+Catalyst rule based seyler saglarken,
+Tungsten cpu optimization saglar.
+
+#### Catalyst
+
+- **Rule based** query optimizer for SparkSQL
+- Scala'nin fonksyonel programlama yapilarini kullanir
+- Yeni optimizasyon teknikleri eklemeye izin verir
+- Data-source specific rule'lar tanimlamaya ve yeni data type'lara kural tanimlamaya izin verir
+
+Query calismadan once nasil calistiracagini inceler.
+Rule based optimizationa ornek:
+
+- *Tablo indeksli mi?*
+- *Query sadece bu indexli kolonlari kullaniyor mu?*
+
+Cost based optimization olsaydi,
+Query'nin alacagi **zaman** ve **memory kullanimi** goz onunde bulundurulurdu.
+
+- *Multiple datasetler icin best path hangisidir?*
+
+**Aciklayici ornek:**
+
+Araban var. Lastikleri mevsime gore sectin, yakitini ozel aldin, Yuku azalttin filan.
+Bunlar **Rule based** oldu. 
+
+Yola ciktiginda sectigin yolu en kisa olacak sekilde ayarladin.
+Bu da **Cost based** oldu.
+
+Catalyst, veri yapisi olarak **Tree**leri kullanir.
+Catalyst'in query calistirmasinin dort buyuk asamasi:
+
+- Analysis
+- Logical Optimization
+- Physical Planning
+- Code Generation
+
+**Catalyst Akis Semasi**
+
+![Catalyst Query Optimization Flow](resource/Catalyst_Flow_Chart.png)
+
+- Analysis:
+    - Sql query'n ve DataFrame'den bi logical plan olusturur.
+    - Plan olusturma isinde katalogdan faydalanir.
+- Logical Optimization:
+    - Logical Plan'i alir, optimize eder.
+    - Bu asama **rule based** asamasini olusturur.
+- Physical Planning
+    - Optimized Logical plan'lerden, veriye ve query'e maplenmis somut/fiziksel planlar olusturur.
+    - Bu fiziksel planlarin costu en dusuk olanini hespalayip alir.
+    - Burasi da **cost based** asamasidir.
+- Code Generation
+    - Secilen plan, java bytecode'una donusturulur.
+
+#### Tungsten
+
+**Cost based optimizer**'mis. CPU ve Memory optimization'u maximize eder.
+IO Performansi yerine CPU performansi artirir.
+
+Java orijinalde transactional applications icin tasarlanmis. 
+Tungsten de, JVM'i data processing'e uygun hale getirecek metotlar kullanir.
+
+**Features**
+
+- Memory'i aciktan optimize eder. Objelerle veya Garbage Collector'le ugrasmaz.
+- Random memory access yerine STRIDE-based memory access kullanir. Boylece **chce-friendly**
+- Supports on-demand JVM byte-code generation
+- Virtual Function Dispatch(?)leri olusturmaz
+- Intermediate data'yi CPU registerlarinda saklar
+- Loop Unrolling'i saglar.
+
+### ETL with DataFrames
+
+**Basic DataFrame Operations:**
+
+- **Read** the data
+    - into dataframe mesela
+- **Analyze** the data
+    - Examining columns, data types, no# of rows
+    - Aggregated stats
+    - Trend Analysis
+- **Transform** data
+    - Filter specific values
+    - Sort data
+    - Join dataset with another
+- **Load** into Databse
+- **Write** file back to disk
+
+Aslinda burada **ETL** gerceklestirdik.
+
+Peki, **ELT** icin konusalim:
+
+- Big data ile cikti bu
+- Tum data **Data Lake** icinde bulunur
+    - Vast pool of raw data
+    - Purpose of the data is not defined
+- Each project forms individual transformation tasks.
+    - ETL'de ve Data Warehouse'larda transformation her seye uygulaniyor(?) sanirim.
+
+#### Read the Data
+
+- Create a DataFrame
+- Create DataFrame from existing DataFrame
+
+Ornekte once pandas DataFrame'ine aktarip, sonra ondan Spark DataFrame'i olusturulacak:
+
+```py
+import pandas as pd
+mtcars = pd.read_csv('mtcars.csv')
+sdf = spark.createDataFrame(mtcars)
+```
+
+#### Analyze the Data
+
+DF'in **şemasina** bakabiliriz mesela. Data Type'lari, column adlarini gorebiliriz.
+
+```py
+sdf.printSchema()
+```
+
+Ayrica **Select** islemleri de Analyze'dir. Spesifik kolonlari analiz ederiz mantiken.
+
+```py
+sdf.select('mpg').show(5) # first 5 rows of mpg column
+```
+
+#### Transform the Data
+
+Amac: Keep only the relevant data.
+
+- Apply filters
+- Joins
+- Sources and tables
+- Column operations
+    - Tum kolonu bir degerle carpmak gibi
+    - Converting units of column
+- Grouping and aggregations
+
+```py
+# filter example
+sdf.filter(sdf['mpg'] < 18).show(5)
+
+# aggregate example
+car_counts = sdf.groupby(['cyl']).agg({"wt": "count"})\ .sort('count(wt)', ascending=False).show(5)
+```
+
+#### Load or Export the Data
+
+Final step of ETL pipeline.
+
+- Export to Databse
+- Export to disk as JSON files
+- Save data to Postgres Database
+- Use API to export data
+    - To Postgres DB mesela
+
+
+
+
+
+
+
+
+
+
 
 
