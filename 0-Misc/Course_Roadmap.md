@@ -9,23 +9,23 @@ Büyük proje için:
 
 Courses Done:
 
-- [x] ! Python for Data Science, AI & Development
-- [x] ! Python Project for Data Engineering
+- [X] ! Python for Data Science, AI & Development
+- [X] ! Python Project for Data Engineering
 
 Courses Left:
 
-- [] Introduction to Relational Databases (RDBMS)
-- [] Databases and SQL for Data Science with Python
-- [x] Hands-on Introduction to Linux Commands and Shell Scripting
-- [x] Relational Database Administration (DBA)
-- [x] ! ETL and Data Pipelines with Shell, Airflow and Kafka
-- [x] Getting Started with Data Warehousing and BI Analytics
-- [x] ! Introduction to NoSQL Databases
-- [x] ! Introduction to Big Data with Spark and Hadoop \*
-- [x] Data Engineering and Machine Learning using Spark
-- [x] Data Engineering Capstone Project
+- [ ] Introduction to Relational Databases (RDBMS)
+- [ ] Databases and SQL for Data Science with Python
+- [X] Hands-on Introduction to Linux Commands and Shell Scripting
+- [X] Relational Database Administration (DBA)
+- [X] ! ETL and Data Pipelines with Shell, Airflow and Kafka
+- [X] Getting Started with Data Warehousing and BI Analytics
+- [X] ! Introduction to NoSQL Databases
+- [X] ! Introduction to Big Data with Spark and Hadoop \*
+- [X] Data Engineering and Machine Learning using Spark
+- [X] Data Engineering Capstone Project
 
 \* : Current
-- [x] ! :Oncelikli yap
-- [x] : Ikinci oncelik
-- [] : Son oncelik
+- [X] ! :Oncelikli yap
+- [X] : Ikinci oncelik
+- [ ] : Son oncelik
