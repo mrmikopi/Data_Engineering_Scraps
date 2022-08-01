@@ -2,8 +2,10 @@
 
 Notes are from an old OneNote note, seperated by date added.
 
-1. [15 February]()
-2. [17 February]()
+1. [February 15](#15-february)
+2. [February 17](#17-february)
+3. [February 22](#22-february)
+4. [March 1](#1-march)
 
 ## 15 February
 
