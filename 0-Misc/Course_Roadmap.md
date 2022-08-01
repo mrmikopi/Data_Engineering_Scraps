@@ -29,3 +29,15 @@ Courses Left:
 - [X] ! :Oncelikli yap
 - [X] : Ikinci oncelik
 - [ ] : Son oncelik
+
+Markdown Checklist Test:
+
+- [ ] Mercury
+- [x] Venus
+- [x] Earth (Orbit/Moon)
+- [x] Mars
+- [ ] Jupiter
+- [ ] Saturn
+- [ ] Uranus
+- [ ] Neptune
+- [ ] Comet Haley
