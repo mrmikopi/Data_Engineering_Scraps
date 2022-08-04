@@ -828,6 +828,7 @@ Spark SQL provides a programming abstraction called DataFrames and can also act 
 1. [RDD's in Parallel Programming and Spark](#rdds-in-parallel-programming-and-spark)
 2. [SparkSQL & Catalyst & Tungsten](#sparksql--catalyst--tungsten)
 3. [ETL with DataFrames](#etl-with-dataframes)
+4. [DataFrames Lab](#dataframes-lab)
 
 ### RDD's in Parallel Programming and Spark
 
@@ -1108,9 +1109,33 @@ Final step of ETL pipeline.
 - Use API to export data
     - To Postgres DB mesela
 
+### DataFrames Lab
 
+- Iki boyutludurlar
+- Columnlar farkli data typelarda olabilir
+- Farkli data inputlari alabilir, baska DataFrame'leri bile input olarak alabilir.
 
+Labin kodlari ayri dosyada repoda tutulacak.
 
+#### Load data to Spark DataFrame
+
+Labda once csv dosyasi Pandas DataFrame'ine cevrilecek.
+Sonra da Spark DataFrame'ine cevrilecek.
+
+#### Basic Data Analysis and Manipulation
+
+Once review edilecek. 
+Sonra Bazi filtreler ekleyip column operasyonlari yapilacak.
+
+Spark'ta **.head()** yerine **.show()** kullanilabilir.
+
+DataFrame'i yeni bir kolonla gostermek icin **.withColumn(**colName, degerler **)** seklinde cagirdik.
+
+#### Grouping and Aggregation
+
+**.gorupby(['column'])** ve **.agg({'column': 'Func'})** kullanimi yapiyoruz.
+
+Sorting icin de **.sort('column', order)** kullaniliyor.
 
 
 
