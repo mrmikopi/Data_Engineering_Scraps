@@ -829,6 +829,7 @@ Spark SQL provides a programming abstraction called DataFrames and can also act 
 2. [SparkSQL & Catalyst & Tungsten](#sparksql--catalyst--tungsten)
 3. [ETL with DataFrames](#etl-with-dataframes)
 4. [DataFrames Lab](#dataframes-lab)
+5. [Spark SQL Real World Usage](#real-world-usage-for-spark-sql)
 
 ### RDD's in Parallel Programming and Spark
 
@@ -1137,10 +1138,79 @@ DataFrame'i yeni bir kolonla gostermek icin **.withColumn(**colName, degerler **
 
 Sorting icin de **.sort('column', order)** kullaniliyor.
 
+### Real World Usage for Spark SQL
 
+Spark SQL, Structured data tutan(?) ve isleyen yapimizdi.
+DataFrame'ler uzerinde query atilabilir.
+Java, Scala, Python ve R'da calisir.
 
+View'lar araciligi ile SQL query'leri olusturabiliriz.
 
+- View, temporary table gorevi gorur.
+    - Gercekten temporary ise, local scope'u Session'a baglidir. Session bitince view da kalkar.
+    - Global Temporary View'lar da Spark Application icinde global scope'a sahiptir.
 
+#### Local Scope Ornegi:
+
+```py
+# Create DataFrame from file
+df = spark.read.json('people.json')
+
+# Create a temp view
+df.createTempView('people')
+
+# Run SQL Query
+spark.sql('SELECT * FROM people').show()
+```
+
+#### Global Scope Ornegi
+
+Keyword'lerdeki degisime dikkat et:
+
+```py
+# Create a global view
+df.createGlobalTempView('people')
+
+# Run SQL Query
+spark.sql('SELEVT * FROM global_temp.people').show()
+```
+
+#### Aggregate Data
+
+DataFrame'lerde **count(), avg(), max(), min()** filan vardi built-in,
+
+SQL query'leri ile de tabi ki aggregation saglayabiliriz DF'lere ihtiyac duymadan.
+TableView'lar ile de saglayabiliyormusuz.
+
+**Aggregation Ornegi:**
+
+```py
+# Setup
+import pandas as pd
+mtcars = pd.read_csv('mtcars.csv')
+sdf = spark.createDataFrame(mtcars)
+
+# DF ile aggregation hatirlatma
+car_counts = sdf.groupby(['cyl'])\
+    .agg({'wt':'count'})\
+    .sort('count(wt)',ascending=False)\
+    .show(5)
+
+# Spark SQL Usage
+sdf.createTempView('cars')
+sql('SELECT cyl, COUNT(*) FROM cars GROUPBY cyl ORDER BY 2 DESC').show(5)
+```
+
+#### Data Sources
+
+- **Parquet Files**
+    - Columnar format
+    - Spark SQL read/write destegi sunar.
+    - Spark SQL'in dosyayi load etmesine gerek yoktur
+- **JSON Datasets**
+    - Spark schema'yi okuyup DataFrame'lere aktarabilir
+- **Hive Tables**
+    - Spark, Hive'da tutulan dataya read/write yapabilir.
 
 
 
