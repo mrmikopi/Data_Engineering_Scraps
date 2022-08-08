@@ -1212,5 +1212,22 @@ sql('SELECT cyl, COUNT(*) FROM cars GROUPBY cyl ORDER BY 2 DESC').show(5)
 - **Hive Tables**
     - Spark, Hive'da tutulan dataya read/write yapabilir.
 
+### SQL Lab
 
+CSV dosyasini Pandas DataFrame'ine aktarip, Spark DataFrame'ine cevirecegiz.
 
+Her zamanki islemleri yapip SDF'i temp view olarak kaydedince, SQL query'lerini calistirabilir olduk.
+
+#### Pandas UDF for Columnar Operations
+
+**UDF:** User Defined Functions
+
+Python'da calistirilan UDF'ler satir satir calisiyor.
+Serialization ve cagirma icin overhead olusuyor.
+Bu yuzden data pipeline'larda UDF'ler **Java / Scala** uzerinde olusturulup **Python** uzerinde cagrimlari yapiliyor.
+
+**Pandas UDF**leri Apache Arrow uzerine kurulu bir sistem. Hem Python uzerinde yazilmis UDF'ler, hem de duz Python'daki kadar yuk olusturmuyor. 
+
+Ayrica SQL ici cagrim yapabilmek icin **@pandas_udf(** return type **)** yazabiliriz.
+
+Labdaki ornekte, Scalar Pandas UDF kullanip wt (agirlik) kolonunu emperyalden metrik sisteme cevirecegiz.
