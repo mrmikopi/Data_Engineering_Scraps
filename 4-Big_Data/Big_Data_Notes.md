@@ -8,6 +8,7 @@ Notes from videos/labs. Mostly in Turkish.
 2. [Week 2 - Hadoop](#week-2---hadoop)
 3. [Week 3 - Spark](#week-3---spark)
 4. [Week 4 - DataFrames & SparkSQL](#week-4---dataframes--sparksql)
+5. [Week 5 - Spark Architecture](#week-5---spark-architecture)
 
 ## Week 1 - Introduction
 
@@ -1243,3 +1244,150 @@ Labdaki ornekte, Scalar Pandas UDF kullanip wt (agirlik) kolonunu emperyalden me
 - Basic DataFrame operations are reading, analysis, transformation, loading, and writing. ​You can use a Pandas DataFrame in Python to load a dataset and apply the print schema, select function, or show function for data analysis. ​For transform tasks, keep only relevant data and apply functions such as filters, joins, column operations, grouping and aggregations, and other functions.
 
 - Spark SQL consists of Spark modules for structured data processing that can run SQL queries on Spark DataFrames and are usable in Java, Scala, Python and R. Spark SQL supports both temporary views and global temporary views​. Use a DataFrame function or an SQL Query + Table View for data aggregation. Spark SQL supports Parquet files, JSON datasets and Hive tables​.
+
+## Week 5 - Spark Architecture
+
+1. [Introduction](#introduction-to-spark-architecture)
+2. []()
+
+### Introduction to Spark Architecture
+
+2 Asil islem uzerinden Spark calisir:
+
+- **Driver Process**
+    - One process per application
+    - Runs application's user code
+    - Creates work
+    - Sends work to the cluster
+- **Executor Process**
+    - Runs multiple threads to perform work
+    - Many executors in a cluster
+    = One or more executors per Node (depends on config)
+
+---
+
+**Spark Context**
+
+Application ile beraber ayaga kalkar.
+DataFrame'lerden ve RDD'lerden once yaratilmasi zorunludur.
+
+Yaratilan **RDD** **ve** **DataFrame**'ler bir **Context**e baglidir.
+Context, RDD ve DataFrame'lerin tum kullanimi boyunca active kalmalidir.
+
+---
+
+**Spark Jobs**
+
+Driver Program kullanicinin kodlarina gore is yaratir. 
+**Job** diyelim bunlara.
+Job'lar, paralel calisabilir.
+
+**Context** ise bu joblari **Task**lara boler.
+
+![Spark Jobs](resource/Spark_Jobs_1.png)
+
+---
+
+**Spark Tasks**
+
+Job'dan olusturulan Task'lar, datanin farkli farkli parcalarinda calisir.
+Her biri bir **Partition**'da calisir.
+
+Task'lar, Executor'lerde **paralel** calisir demek yani.
+
+![Spark Tasks](resource/Spark_Tasks_1.png)
+
+---
+
+**Worker Nodes**
+
+Cluster'daki nodelardir. 
+Executor process'leri ve calistirir boylece tasklar calisir.
+
+Her **Executor**e, tasklari calistirmalari icin resource (cpu core + memory) tahsis edilir.
+Core basina bir task calistirabilir.
+
+Her bir executor, kendi **data caching**inden sorumludur.
+
+Executor sayisini ve cpu core'larini artirmak, 
+cluster'daki **parallelism**i artirir.
+
+Tum cekirdekler kullanilana kadar, tum taskler ayri thread'lerdedir.
+
+Task bittiginde, Executor sonuclari:
+
+- Yeni bir RDD'ye koyabilir
+- Driver Program'e direkt iletebilir.
+
+Node basina dusen core sayisini executor'un kullanacagi node sayisina gore ayarlamak lazimmis (?)
+
+---
+
+**Stages & Shufling**
+
+**Stage:** Ayni partition'da yapilan tasklara stage denir.
+
+**Shuffle:** Stage'lerin sinirlarini olusturur. 
+Ayrica, baska partitionla is yapilacaksa meydana gelir.
+
+Grafikle daha rahat:
+
+![Spark Shuffle](resource/Spark_Shuffle_1.png)
+
+Shuffle'lar:
+
+- Costly'dir.
+    - Data Serialization
+    - Disk and Network I/O
+- Operasyonlar, mevcut partition haricinde baska bir partition gerektirirse kullanilir. 
+    - Ornek olarak: Group by
+- Shuffle oldugunda, Spark cluster icinde dataseti tekrar dagitmis olur.
+
+Baska bir Shuffle ornegi:
+
+![Shuffle Example](resource/Spark_Shuffle_2.png)
+
+1.  'a' Datasetin olsun. Partirioning ile **1a** ve **2a** var elinde.
+2. Transform ediyorsun ama baska datalara ihtiyac olmadan. Columnar operation olabilir ornegin. Artik yeni datasetin 'b'. **1b** ve **2b** elinde.
+3. GroupBy kullanimi yapacaksin. Partitionlar arasi bilgi lazim. Shuffle oluyor, **1c** ve **2c** seklinde 'c' Datasetin olusuyor.
+4. Action oldugu zaman bu partitionlar aktariliyor. Ornegimizde Driver'a collect ediliyor.
+    - **Dipnot:** Buyuk datalari driver'a cort diye collect etme. Memory'sini yer bitirir. Data buyukse, reduction uygula collection'dan once.
+
+---
+
+**Recap**
+
+![Spark Architecture](resource/Spark_Architecture_1.png)
+
+- Mimari, **Driver** ve **Executor** islemlerinden olusur.
+
+- Cluster, **Cluster Manager** ve **Worker Node**lari icerir.
+
+- Spark Context, **tasklari** Cluster Manager'a **schedule** eder.
+
+- Cluster Manager, cluster'in **resourcelarini manage** eder.
+
+---
+
+Driver Program, Client olarak veya Cluster icinde calisabilir.
+
+- **Client Mode** - Driver process'i Cluster disinda calistirildiginda olur.
+- **Cluster Mode** - Driver process'i cluster icinde calistirilir.
+
+Iki modda da, Driver'in Cluster'la **iletisim** kurmasi **zorunludur**.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
