@@ -1248,7 +1248,7 @@ Labdaki ornekte, Scalar Pandas UDF kullanip wt (agirlik) kolonunu emperyalden me
 ## Week 5 - Spark Architecture
 
 1. [Introduction](#introduction-to-spark-architecture)
-2. []()
+2. [Spark Cluster Modes](#spark-cluster-modes)
 
 ### Introduction to Spark Architecture
 
@@ -1375,6 +1375,146 @@ Driver Program, Client olarak veya Cluster icinde calisabilir.
 - **Cluster Mode** - Driver process'i cluster icinde calistirilir.
 
 Iki modda da, Driver'in Cluster'la **iletisim** kurmasi **zorunludur**.
+
+### Spark Cluster Modes
+
+**Spark Cluster Manager**i hatirlayalim:
+
+- Cluster ile iletisime gecip application icin gerekli **resouce**u temin eder.
+- Application'un disinda bir servis olarak calisir ve cluster type'i abstract eder
+
+- Uygulama calisirken Spark Context, tasklari olusturup hangi resource'larin gerekli oldugunu Cluster Manager'a soyler.
+- Ardindan Cluster Manager, executor core'lari ve memory resource'lari ayirir cluster icin.
+- Resourcelar tahsis edilince, Tasklar Executor Process'lere aktarilir.
+
+---
+
+**Cluster Manager Cesitleri:**
+
+- **Spark Standalone**: Spark ile gelir, basit clusterlar icin idealdir.
+- **Hadoop** **YARN**: Hadoop'un Cluster Manager'i.
+- **Apache** **Mesos**: General purpose cluster manager with some benefits.
+- **Kubernetes**: Runs containerized applications.
+
+Kullanilacak cluster-manager'i secmek su etkenlere baglidir:
+
+- Kurulum kolayligi
+- Portability
+- Deployment
+- Data Partitioning ihtiyaclari
+
+---
+
+**Spark Standalone**
+
+- Built in geldigi icin no additional dependencies
+- Fastest way to setup Spark Cluster
+- Spark icin ozel tasarim, **not** general-purpose.
+
+**Spark Standalone's Components:**
+
+- **Workers**: Executor process'leri calistirir
+- **Master**: Worker'lari cluster'a baglar.
+    - Cluster Node'lardan herhangi birinde olabilir
+    - Eger worker'larla beraber bulunuyorsa, tum resource'u worker'lara verme. Master da resource tuketmelidir.
+
+
+**Setup Spark Standalone:**
+
+1. Start the Master
+    - Master'in URL'ini ve Port'unu verecektir.
+2. URL sayesinde Worker'lari calistirabiliriz.
+3. Master ve Worker'lar ayaktaysa, Spark application calistirilabilir.
+    - Calistirirken arguman olarak Master URL'i veriyoruz ki baglansinlar.
+
+---
+
+**YARN:**
+
+- General Purpose
+- Supports many other big data ecosystem frameworks
+- Kendi config ve setup'ini gerektirecek
+- Dependency'leri var. Spark Standalone'a gore deploy etmesi daha zor.
+
+**Spark'i YARN'da calistirmak:**
+
+(Yarn ayakta diye kabul ediyoruz)
+
+1. `spark-submit`'i `--master YARN` opsiyonu ile calistiriyoruz:
+
+```sh
+$ ./bin/spark-submit \
+    --master YARN \
+    <additional configuration>
+```
+
+2. Spark, default Hadoop config dosyalarina bakip, YARN'a nasil baglanacagini ayarliyor.
+
+---
+
+**Apache** **Mesos:**
+
+Faydalarinin basinda **partitioning** var:
+
+- **Dynamic Partitioning** Spark - Diger Frameworkler arasi partitioning
+- **Scalable Partitioning** Spark instance'lari arasinda partitioning
+
+Kurulumu ekstra adimlar gerektiriyormus. Link birakmislar Allah razi olsun.
+
+[Mesos'la Setup Linki](https://spark.apache.org/docs/latest/running-on-mesos.html)
+
+---
+
+**Kubernetes**
+
+Containarized applicationlari calistirir.
+
+- Spark uygulamalari daha **portable** olur 
+- **Automate** **deployment**
+- Simplifies **dependency** **management**
+- **Scale** the cluster
+
+Spark, built-in native Kube scheduler kullaniyormus.
+
+**Spark'i Kube ile calistirmak:**
+
+```sh
+$ ./bin/spark-submit \
+    --master k8s://https://<k8s-apiserver-host>:<k8s-apiserver-port> \
+    <additional configuration>
+```
+
+---
+
+**Local Mode**
+
+Spark'i herhangi bir cluster(/manager) olmadan local olarak calistirabiliriz.
+
+- Cluster'a baglanmaz. Calistirmasi kolay.
+- `spark-submit` ile ayni process'te calisir.
+- Task'lar icin threadler kullanir.
+- Test / Debug islemleri icin ideal olabilir.
+- Single process icinde calistigi icin, performance limited.
+
+**Setup Local Mode:**
+
+User `--master local[#]`
+
+```sh
+# Launch Spark in local with 8 cores
+
+$ ./bin/spark-submit \
+    --master local[8] \
+    <additional configuration>
+
+# Launch with all available cores
+
+$ ./bin/spark-submit \
+    --master local[*] \
+    <additional configuration>
+```
+
+*Not:* Girdigin tum configler local mode'da gecerli olmayabilir.
 
 
 
