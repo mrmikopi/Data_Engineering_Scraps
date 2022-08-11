@@ -1249,6 +1249,7 @@ Labdaki ornekte, Scalar Pandas UDF kullanip wt (agirlik) kolonunu emperyalden me
 
 1. [Introduction](#introduction-to-spark-architecture)
 2. [Spark Cluster Modes](#spark-cluster-modes)
+3. [Run Spark Application](#run-a-spark-application)
 
 ### Introduction to Spark Architecture
 
@@ -1516,8 +1517,135 @@ $ ./bin/spark-submit \
 
 *Not:* Girdigin tum configler local mode'da gecerli olmayabilir.
 
+### Run a Spark Application
 
+**Spark-Submit**
 
+Bir script.
+
+- Unified interface for submitting applications
+- bin/ dizininde bulunur
+- Tum cluster typelari icin cagrilir ve birusu config ayarlayabilir.
+- **Unified** **olusu:** Localden cluster mode'una mesela tek argumanla degistirebilirsin.
+- Application language veya cluster manager type'dan bagimsiz ayni sekilde calisir.
+    - Python ve Java app'lerini ayni anda calistirabilir mesela.
+
+---
+
+**Using spark-submit**
+
+Soyle calisacaktir:
+
+1. Command line arguement/option'larini alir
+2. `conf/spark-defaults.conf` altindaki ek ayarlari okur
+3. `--master` ile belirtilen cluster manager'a baglan // local'de calis
+4. Application dosyalarini (JAR veya Python) cluster'a dagiitip calistir.
+
+---
+
+**Common `spark-submit` Options**
+
+![Spark Submit Options](resource/Spark_Submit_1.png)
+
+Bunlarin sonuna `--conf` ile ek konfigurasyonlar eklenirmis.
+
+Onlarin sonuna da `<application-path>` ve `<application-args>` gelir.
+
+Path dedigi JAR veya PyScript adresi. 
+Python icin `--py-files` diyip veriyorsun.
+
+- Jar'lari direkt verebiliriz
+- Python icin `.py`, `.egg`, `.zip` verebiliriz.
+
+Args da programa paslanan argumanlar. `args[]` yani kurban oldugum.
+
+---
+
+**Spark**-**Submit** **Examples**
+
+1. YARN ile Scala'daki `'SprakPi'` isimli programi calistiracagiz. Arguman olarak 1000 paslayacagiz.
+
+```sh
+# Launch Scala SparkPi to a YARN cluster
+
+./bun/spark-submit \
+    --class org.apache.spark.examples.SparkPi \
+    --master YARN \
+    /path/to/examples.jar \
+    1000
+```
+
+2. Python'daki `SparkPi` cagrilacak. Spark Standalone kullanilacak.
+
+```sh
+# Launch Python SparkPi with Standalone Cluster at 207.184.161.138
+
+./bin/spark-submit \
+    --master spark://207.184.161.138:7077 \
+    examples/src/main/python/pi.py \
+    1000
+```
+
+---
+
+**Application** **Dependencies:**
+
+Dependency'leri yonetmek icin:
+
+- Projeleri veya kutuphaneleri application ile beraber paketle. Boylece driver ve executorlere erisilebilir olur.
+
+- Java ve Scala icin **Uber**-**JAR** olusturmak iyi olacaktir.
+    - Uber Jar: Dependency ve kutuphanelerin beraber paketlendigi JAR dosyalari.
+- Python icin sunlari sagla:
+    - Cluster Node'lari ayni versiyondaki dependency'lere erisiyor olmali
+    - Python versiyonlari ayni olmali
+    - `--py-files` argumaniyla dependency'leri paslayabiliriz.
+    - Virtual environment kurularak da isolated cozumler saglanabilir.
+
+---
+
+**Spark** **Shell**
+
+- Spark API icin kullanisli bir yontem
+- Data Analizini interaktif olarak yapmani saglar
+- Local veya Cluster modda kullanilabilir. `spark-submit` ile ayni option'lari paylasir.
+- Scala'da veya Python'da baslatilabilir.
+
+Spark Shell basladiginda, **SparkContext** ve **SparkSession** da otomatik olarak baslatilir.
+
+Action'lar Spark Shell'e girildiginde Driver'a girilmis gibi *job*lara donusur ve *task*lar olarak cluster'a aktarilir.
+
+---
+
+**Spark Shell'in sagladigi bilgiler**
+
+Lokalde acildiginda sundugu bilgiler:
+
+- Spark Load Log konumu/dosyasi
+- Spark web UI address
+- Variable names for SparkContext / SparkSession
+- Version info for important libraries (JDK, Scala)
+
+---
+
+**Scala** **Shell** **Examples**
+
+1. Launch Scala Spark Shell
+2. Create distributed DataFrame with column `'id'` and 10 values (0-9)
+
+```scala
+val df = spark.range(10)
+// df: org.apache.spark.sql.Dataset[Long] = [id: bigint]
+```
+
+3. Add a column that evaluates an SQL expression for modulo of 2 and show first 4 rows as result.
+
+```scala
+df.withColumn("mod", expr("id % 2")).show(4)
+// Shows result as table
+```
+
+*Not:* `.show(4)` bir **Spark** **Action** olarak islev gordu.
 
 
 
