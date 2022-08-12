@@ -1647,6 +1647,28 @@ df.withColumn("mod", expr("id % 2")).show(4)
 
 *Not:* `.show(4)` bir **Spark** **Action** olarak islev gordu.
 
+### Spark Lab 4
+
+- Lab icin docker ve docker-compose kurulumu yaptim.
+- Git ile ilgili repoyu cektim
+- `sudo dockerd` ile docker daemon'unu calistirdiktan sonra
+- `docker-compose up` komutu ile docker-compose'u calistirdim.
+    - **Master** ve **Worker** nodelarin calistigini teyit etmek icin ``docker container ls` komutu ile calisan docker container/image'larini gordum.
+- Python'da **PySpark** ile yazilan kodu calistirmak icin birkac hatayla ugrastim:
+    - `JAVA_HOME` Path'ini dogru ayarlamam gerekti
+    - Kullanilan JDK surumunu 18'den 17'ye aldim.
+    - 17 de calismayinca JDK 11 kurulumu yapip onu kullandirdim.
+- Kod ierigi:
+    - Master Node URL'inden SparkContext'i aliyor
+    - SparkSession'u aliyor
+    - Session uzerinden kucuk bir Spark DataFrame'i olusturuyor
+    - DataType'lari yazdiriyor
+    - `.show()` aksiyonu cagiriyor.
+- Kodu calistirabildigin zaman, Spark UI'da `Running Applications` altinda gozukuyor.
+- Is bitirildiginde `Completed Applications` altina geciyor.
+- UI uzerinde, executor basina ne kadar core/memory verildigi gozukuyor.
+
+
 
 
 
