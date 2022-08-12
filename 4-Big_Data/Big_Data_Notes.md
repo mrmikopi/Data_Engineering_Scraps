@@ -1655,12 +1655,12 @@ df.withColumn("mod", expr("id % 2")).show(4)
 - Git ile ilgili repoyu cektim
 - `sudo dockerd` ile docker daemon'unu calistirdiktan sonra
 - `docker-compose up` komutu ile docker-compose'u calistirdim.
-    - **Master** ve **Worker** nodelarin calistigini teyit etmek icin ``docker container ls` komutu ile calisan docker container/image'larini gordum.
+    - **Master** ve **Worker** nodelarin calistigini teyit etmek icin `docker container ls` komutu ile calisan docker container/image'larini gordum.
 - Python'da **PySpark** ile yazilan kodu calistirmak icin birkac hatayla ugrastim:
     - `JAVA_HOME` Path'ini dogru ayarlamam gerekti
     - Kullanilan JDK surumunu 18'den 17'ye aldim.
     - 17 de calismayinca JDK 11 kurulumu yapip onu kullandirdim.
-- Kod ierigi:
+- Kod icerigi:
     - Master Node URL'inden SparkContext'i aliyor
     - SparkSession'u aliyor
     - Session uzerinden kucuk bir Spark DataFrame'i olusturuyor
@@ -1673,7 +1673,10 @@ df.withColumn("mod", expr("id % 2")).show(4)
 ### Week 5 Summary & Highlights
 
 - Spark Architecture has driver and executor processes, coordinated by the Spark Context in the Driver​.
-
+- The Driver creates jobs and the Spark Context splits jobs into tasks which can be run in parallel in the executors on the cluster​. Stages are a set of tasks that are separated by a data shuffle. Shuffles are costly, as they require data serialization, disk and network I/O.​ The driver program can be run in either client Mode (connecting the driver outside the cluster) or cluster mode (running the driver in the cluster).
+- Cluster managers acquire resources and run as an abstracted service outside the application. Spark can run on Spark Standalone, Apache Hadoop YARN, Apache Mesos or Kubernetes cluster managers, with specific set-up requirements.​ Choosing a cluster manager depends on your data ecosystem and factors such as ease of configuration, portability, deployment, or data partitioning needs. Spark can also run using local mode, which is useful for testing or debugging an application.
+- 'spark-submit’ is a unified interface to submit the Spark application, no matter the cluster manager or application language​. Mandatory options include telling Spark which cluster manager to connect to; other options set driver deploy mode or executor resourcing. To manage dependencies, application projects or libraries must be accessible for driver and executor processes, for example by creating a Java or Scala uber-JAR​. 
+- Spark Shell simplifies working with data by automatically initializing the SparkContext and SparkSession variables and providing Spark API access.
 
 
 
