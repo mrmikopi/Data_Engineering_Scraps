@@ -1250,6 +1250,8 @@ Labdaki ornekte, Scalar Pandas UDF kullanip wt (agirlik) kolonunu emperyalden me
 1. [Introduction](#introduction-to-spark-architecture)
 2. [Spark Cluster Modes](#spark-cluster-modes)
 3. [Run Spark Application](#run-a-spark-application)
+4. [Spark Lab 4](#spark-lab-4)
+5. [Summary & Highlights](#week-5-summary--highlights)
 
 ### Introduction to Spark Architecture
 
@@ -1667,6 +1669,10 @@ df.withColumn("mod", expr("id % 2")).show(4)
 - Kodu calistirabildigin zaman, Spark UI'da `Running Applications` altinda gozukuyor.
 - Is bitirildiginde `Completed Applications` altina geciyor.
 - UI uzerinde, executor basina ne kadar core/memory verildigi gozukuyor.
+
+### Week 5 Summary & Highlights
+
+- Spark Architecture has driver and executor processes, coordinated by the Spark Context in the Driver​.
 
 
 
