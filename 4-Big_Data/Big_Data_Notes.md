@@ -9,6 +9,7 @@ Notes from videos/labs. Mostly in Turkish.
 3. [Week 3 - Spark](#week-3---spark)
 4. [Week 4 - DataFrames & SparkSQL](#week-4---dataframes--sparksql)
 5. [Week 5 - Spark Architecture](#week-5---spark-architecture)
+6. [Week 5 - Spark Runtime Environments](#week-5---spark-runtime-environments)
 
 ## Week 1 - Introduction
 
@@ -1251,7 +1252,7 @@ Labdaki ornekte, Scalar Pandas UDF kullanip wt (agirlik) kolonunu emperyalden me
 2. [Spark Cluster Modes](#spark-cluster-modes)
 3. [Run Spark Application](#run-a-spark-application)
 4. [Spark Lab 4](#spark-lab-4)
-5. [Summary & Highlights](#week-5-summary--highlights)
+5. [Summary & Highlights](#spark-architecture-summary--highlights)
 
 ### Introduction to Spark Architecture
 
@@ -1670,13 +1671,145 @@ df.withColumn("mod", expr("id % 2")).show(4)
 - Is bitirildiginde `Completed Applications` altina geciyor.
 - UI uzerinde, executor basina ne kadar core/memory verildigi gozukuyor.
 
-### Week 5 Summary & Highlights
+### Spark Architecture Summary & Highlights
 
 - Spark Architecture has driver and executor processes, coordinated by the Spark Context in the Driver​.
 - The Driver creates jobs and the Spark Context splits jobs into tasks which can be run in parallel in the executors on the cluster​. Stages are a set of tasks that are separated by a data shuffle. Shuffles are costly, as they require data serialization, disk and network I/O.​ The driver program can be run in either client Mode (connecting the driver outside the cluster) or cluster mode (running the driver in the cluster).
 - Cluster managers acquire resources and run as an abstracted service outside the application. Spark can run on Spark Standalone, Apache Hadoop YARN, Apache Mesos or Kubernetes cluster managers, with specific set-up requirements.​ Choosing a cluster manager depends on your data ecosystem and factors such as ease of configuration, portability, deployment, or data partitioning needs. Spark can also run using local mode, which is useful for testing or debugging an application.
 - 'spark-submit’ is a unified interface to submit the Spark application, no matter the cluster manager or application language​. Mandatory options include telling Spark which cluster manager to connect to; other options set driver deploy mode or executor resourcing. To manage dependencies, application projects or libraries must be accessible for driver and executor processes, for example by creating a Java or Scala uber-JAR​. 
 - Spark Shell simplifies working with data by automatically initializing the SparkContext and SparkSession variables and providing Spark API access.
+
+## Week 5 - Spark Runtime Environments
+
+1. [Spark on IBM Cloud](#spark-on-ibm-cloud)
+2. [Spark Configuration](#spark-configuration)
+
+
+### Spark on IBM Cloud
+
+Cloud benefits:
+
+- Less config needed cunlu predefined configs.
+- Easily scale up to increase compute power.
+
+IBM Cloud Benefits:
+
+- Security
+- Integration for other IBM Products
+
+---
+
+**AIOps:**
+
+IT Operasyonlari icin Artificial Intelligence.
+Su alanlarda yardimci olur:
+
+- Collect, aggregate and work with large data.
+- Identify events and patterns in infrastructure
+-Diagnose root causes of issues, or even fix them
+
+---
+
+**IBM Spectrum Conductor:**
+
+Spark ile kullanilabilen bir tool.
+
+- Tek bi buyuk cluster'da farkli Spark applicationlari calistirabilir.
+- Farkli spark verisyonlari bile calistirabilir.
+- Cluster resourcelarini yonetir ve pay eder.
+- Security saglar
+
+---
+
+**Ozet:**
+
+![Spark IBM Cloud Summary](resource/Spark_IBM_1.png)
+
+### Spark LAB
+
+IBM Watson planin varsa, Catalog'dan **Cloud Pak for Data** diyoruz.
+
+Icinden -> **Services** -> Watson Studio -> Launch in Pak
+
+Create new project filan diyip, Jupyter'i sectik. Kernel'i ayarladik. pybook icin URL verdik.
+
+### Spark Configuration
+
+Uc ana unsuru vardir:
+
+- **Properties:** Adjust & Control App Behavior
+- **Environment Variables:** Makinaya ozel ayarlar
+- **Logging:** Log konfigurasyonlari
+
+Ucunun de dosyalari Spark'in `/conf/` klasorunde bulunur.
+Spark `.template` olarak config dosyalarinin taslagini sunar.
+Iclerini editleyip, uncomment edip, dosya adini duzeltirsen calisir.
+
+---
+
+**Setting Properties**
+
+1. Driver program icinde, SparkSession yaratirken property'ler verilebilir.
+Asagidaki `.master` ve `.config` ayarlari gibi sanirim.
+
+```py
+spark = SparkSession\
+    .builder\
+    .master("spark://masterurl:7077")\
+    .config("key","value")\
+    .getOrCreate()
+```
+
+2. `conf/spark-defaults.conf` dosyasindan ayarlanabilir.
+
+3. `spark-submit` i calistirirken verilen `--master` ve `--conf` ayarlari ile de ayarlanabilir.
+
+Bu 3 metodun hiyerarsik sirasi var ki birbirlerini yanlislikla ezmesinler:
+
+![Spark Configuration Hierarchy](resource/Spark_Config_1.png)
+
+---
+
+**Static Configlerin Kullanimi**
+
+Bunlar program icerisinde olusturulduklari icin, genelde degistirilmezler.
+Degismemesi daha olasi seyleri burada ayarla.
+
+Ornegin: `.appName` property'sini program icinde ayarladik ve degistirmemiz gerekmeyecek.
+
+Baska bir ornekte de `.maxResultSize` propertysini `2g` diye 2 gigabyte ayarliyor. Bu da static ayarlardan.
+
+---
+
+**Dynamic Configlerin Kullanimi**
+
+Bazi configler hard-coded olmasin diye varmis.
+`spark-submit` in icine verilenleri sanirim sayabiliriz(?).
+
+Ornek: `--master` diye secilen location hard-coded degildir. Dynamic configdir.
+
+Ayrica: `--executor-cores` veya `--executor-memory` de bunlara ornektir.
+
+---
+
+**Spark Environment Variables**
+
+- `conf/spark-env.sh` altindadir varsa.
+    - Spark baslatildiginda her makina icin ayri ayri acilir bu.
+    - Her makinada farkli ayarlar icerebilir.
+
+Ornek: `PYSPARK-PYTHON` env. variable'i her makina icin ayni set etmek isteyebiliriz. Python surumunu esitleyecektir.
+
+---
+
+**Spark Logging Config**
+
+Log4j ile loglama yapilir.
+`conf/log4j.properties` altindan ayarlanir.
+
+- Driver ve Executorler icin log-Level ayarlamasi yapilabilir.
+- Spark Standalone icin master ve worker loggingleri de buradan ayarlanir.
+- Loglarin nereye cikarilacagi da ayarlanabilir
 
 
 
