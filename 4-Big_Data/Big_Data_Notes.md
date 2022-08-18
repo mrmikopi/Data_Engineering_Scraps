@@ -1120,6 +1120,10 @@ Final step of ETL pipeline.
 
 Labin kodlari ayri dosyada repoda tutulacak.
 
+*Not:* DataFrame'lerle SQL, ayni engine uzerinde calistiklari icin,
+SQL veya built-in DF fonksyonlari arasinda cok fark yoktur.
+
+
 #### Load data to Spark DataFrame
 
 Labda once csv dosyasi Pandas DataFrame'ine cevrilecek.
@@ -1682,7 +1686,9 @@ df.withColumn("mod", expr("id % 2")).show(4)
 ## Week 5 - Spark Runtime Environments
 
 1. [Spark on IBM Cloud](#spark-on-ibm-cloud)
-2. [Spark Configuration](#spark-configuration)
+2. [Spark Lab](#spark-lab-setup)
+3. [Spark Configuration](#spark-configuration)
+4. [Running Spark on Kubernetes](#running-spark-on-kubernetes)]
 
 
 ### Spark on IBM Cloud
@@ -1725,7 +1731,7 @@ Spark ile kullanilabilen bir tool.
 
 ![Spark IBM Cloud Summary](resource/Spark_IBM_1.png)
 
-### Spark LAB
+### Spark LAB Setup
 
 IBM Watson planin varsa, Catalog'dan **Cloud Pak for Data** diyoruz.
 
@@ -1811,6 +1817,64 @@ Log4j ile loglama yapilir.
 - Spark Standalone icin master ve worker loggingleri de buradan ayarlanir.
 - Loglarin nereye cikarilacagi da ayarlanabilir
 
+### Running Spark on Kubernetes
+
+**Kubernetes (k8s)**: Runs containerized applications on a cluster.
+
+**Open source**, highly **scalable**, **flexible & automated** deployments, **portable** yani cloudda da makinada da ayni sekilde calisir.
+
+---
+
+Clusterlarda distributed calisan sistemlere resilient ve flexible ozellikler katar:
+
+- Network service discovery
+- Cluster Load Balancing
+- Automated Scale up and down
+- Orchestrating Storage
+
+---
+
+Locally hosted minik bi versiyonu da var. Development isleri icin genelde.
+**minikube** bunu saglayan toollardan biriymis.
+
+Gelistirmeler uygunsa direkt production'daki kubernetes cluster'ina aktarabiliyorsun.
+
+---
+
+**Cloud'da** Kubernetes:
+
+Production ortami icin Cloud kullanimi cok yaygin. Private veya hybrid cloudlarda calistirilabilir.
+
+Ayaga kaldirmak icin(?):
+
+- Mevcut toollari kullanabilirsin
+- Certified Kube providerlarindan *turnkey options* alabilirmisiz (?(?(?)))
+
+---
+
+**Spark** with **Kube**
+
+Spark (2.3+), Kube'u **alternative deployment mode** olarak alabiliyormus. 
+Spark w/Kube **benefits:**
+
+- **Containerization:** apps are more portable. Dependencies are easier to manage.
+- Better **Resource Sharing**: Running Multiple Spark apps concurrently and in isolation
+
+---
+
+**Submitting Spark apps to Kube**
+
+1. `spark-submit`'e --master olarak k8s URL'i veriyorsun.
+2. Kube, driver ve executorleri, pod'larinda calisir halde sana sunuyor.
+
+Application'lar client mode veya cluster mode olabilir.
+
+Client mode olursa:
+
+- Executor'ler driver'a baglanabiliyor olmali.
+- Driver pod'un ismi `spark.kubernetes.driver.pod.name` uzerinden ayarlanmali ki pod cleanup oldugunda onu da silebilsin.
+
+### Spark Kubernetes Lab
 
 
 
