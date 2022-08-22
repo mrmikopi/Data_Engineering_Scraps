@@ -61,6 +61,37 @@ k exec  -n default -it spark -c spark  -- /bin/bash
 # If you are interested you can have a look at the Dockerfile 
 # to understand what’s really inside.
 
+# You can also check out the pod.yaml. You'll notice that it contains two containers.
+# One is Apache Spark, another one is providing a Kubernetes Proxy 
+# - a so called side car container - allowing to 
+# interact with the Kubernetes cluster from inside a Pod.
+
+# Container icinde, spark-submit'i calisiricaz.
+# Spark'a eklenen Kube Scheduler'i kullanabilecegimiz spark-submit komutu asagidaki gibi.
+# Argumanlarin aciklamalari Big_Data_Notes.md'da
+./bin/spark-submit \
+--master k8s://http://127.0.0.1:8001 \
+--deploy-mode cluster \
+--name spark-pi \
+--class org.apache.spark.examples.SparkPi \
+--conf spark.executor.instances=3 \
+--conf spark.kubernetes.container.image=romeokienzler/spark-py:3.1.2 \
+--conf spark.kubernetes.executor.limit.cores=1 \
+local:///opt/spark/examples/jars/spark-examples_2.12-3.1.2.jar \
+10
+
+# Monitor running pods (in a different terminal)
+kubectl get po -n default
+
+# To check the job's elapsed time just execute 
+# (you need to replace the Pod name of course with the one on your system):
+kubectl logs -n default spark-pi-6f62d17a800beb3e-driver |grep "Job 0 finished:"
+
+# If you are interested in knowing what value for Pi the application came up with just issue:
+kubectl logs -n default spark-pi-6f62d17a800beb3e-driver |grep "Pi is roughly "
+
+
+
 
 
 

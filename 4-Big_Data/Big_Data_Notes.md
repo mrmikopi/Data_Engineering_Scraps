@@ -1689,6 +1689,8 @@ df.withColumn("mod", expr("id % 2")).show(4)
 2. [Spark Lab](#spark-lab-setup)
 3. [Spark Configuration](#spark-configuration)
 4. [Running Spark on Kubernetes](#running-spark-on-kubernetes)]
+5. [Spark Kubernetes Lab](#spark-kubernetes-lab)
+6. [Summary & Highlights](#spark-runtime-environments-summary--highlights)
 
 
 ### Spark on IBM Cloud
@@ -1876,9 +1878,38 @@ Client mode olursa:
 
 ### Spark Kubernetes Lab
 
+**New-Horizon** ile Kind calistirmak icin calisan bir docker gerekliydi.
+Linux docker kurulumu yapip arkada sudo privilage ile calisir hale getirdim.
+Kind kurulumunu repodan cekilen .sh scriptleri ile hallettim.
+
+Ayrica bir script ile de Docker uzerinde calisan Kubernetes seysi yarattim.
+**Kind:** Kube in Docker.
+
+Spark Podunu aktarip calistirdik. Calisan poda girdik.
+
+Spark submit komutu calistirdik. Komutun aciklamalari:
 
 
 
+- **./bin/spark-submit** is the command to submit applications to a Apache Spark cluster.
+- **--master k8s://http://127.0.0.1:8001** is the address of the Kubernetes API server - the way kubectl but also the Apache Spark native Kubernetes scheduler interacts with the Kubernetes cluster
+- **--name spark-pi** provides a name for the job and the subsequent Pods created by the Apache Spark native Kubernetes scheduler are prefixed with that name
+- **--class org.apache.spark.examples.SparkPi** provides the canonical name for the Spark application to run (Java package and class name)
+- **--conf spark.executor.instances=1** tells the Apache Spark native Kubernetes scheduler how many Pods it has to create to parallelize the application. Note that on this single node development Kubernetes cluster increasing this number doesn't make any sense (besides adding overhead for parallelization)
+- **--conf spark.kubernetes.container.image=romeokienzler/spark-py:3.1.2** tells the Apache Spark native Kubernetes scheduler which container image it should use for creating the driver and executor Pods. This image can be custom build using the provided Dockerfiles in kubernetes/dockerfiles/spark/ and bin/docker-image-tool.sh in the Apache Spark distribution
+- **--conf spark.kubernetes.executor.limit.cores=1** tells the Apache Spark native Kubernetes scheduler to set the CPU core limit to only use one core per executor Pod
+- **local:///opt/spark/examples/jars/spark-examples_2.12-3.1.2.jar** indicates the jar file the application is contained in. Note that the local:// prefix addresses a path within the container images provided by the spark.kubernetes.container.image option. Since we're using a jar provided by the Apache Spark distribution this is not a problem, otherwise the spark.kubernetes.file.upload.path option has to be set and an appropriate storage subsystem has to be configured, as described in the documentation
+- **10** tells the application to run for 10 iterations, then output the computed value of Pi
+
+Kube labaratuvar notlarini [Kube Lab.md](resource/kube_lab.md) dosyasinda yedekledim.
+
+### Spark Runtime Environments Summary & Highlights
+
+- Running Spark on IBM Cloud provides enterprise security and easily ties in IBM big data solutions for AIOps, IBM Watson and IBM Analytics Engine​. Spark’s big data processing capabilities work well with AIOps tools, using machine learning to identify events or patterns and help report or fix issues​. IBM Spectrum Conductor manages and deploys Spark resources dynamically on a single cluster and provides enterprise security.​ IBM Watson helps you focus on Spark’s machine learning capabilities by creating automated production-ready environments for AI​. IBM Analytics Engine separates storage and compute to create a scalable analytics solution alongside Spark’s data processing capabilities.
+
+- You can set Spark configuration using properties (to control application behavior), environment variables (to adjust settings on a per-machine basis) or logging properties (to control logging outputs)​. Spark property configuration follows a precedence order, with the highest being configuration set programmatically, then spark-submit configuration and lastly configuration set in the spark-defaults.conf file​. Use Static configuration options for values that don’t change from run to run or properties related to the application, such as the application name​. Use Dynamic configuration options for values that change or need tuning when deployed, such as master location, executor memory or core settings​.
+
+- Use Kubernetes to run containerized applications on a cluster, to manage distributed systems such as Spark with more flexibility and resilience. You can run Kubernetes as a deployment environment, which is useful for trying out changes before deploying to clusters in the cloud​. Kubernetes can be hosted on private or hybrid clouds, and set up using existing tools to bootstrap clusters, or using turnkey options from certified providers​. While you can use Kubernetes with Spark launched either in client or cluster mode, when using Client mode, executors must be able to connect with the driver and pod cleanup settings are required.
 
 
 
