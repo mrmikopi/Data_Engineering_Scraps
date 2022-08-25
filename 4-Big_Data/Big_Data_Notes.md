@@ -1916,6 +1916,7 @@ Kube labaratuvar notlarini [Kube Lab.md](resource/kube_lab.md) dosyasinda yedekl
 
 1. [Spark UI](#spark-ui)
 2. [Monitoring App Progress](#monitoring-application-progress)
+3. [Debugging Spark Application Issues](#debugging-spark-application-issues)
 
 ### Spark UI
 
@@ -2045,11 +2046,66 @@ UI'a app bittikten sonra bakmak istiyorsan **Event Logging**i enable etmen lazim
 - Start History Server
     - `./sbin/start-history-server.sh`
 
+### Debugging Spark Application Issues
 
+Olay cikarabilen unsurlar:
 
+- User Code
+- Configuration
+- Application Dependencies
+- Resource Allocation
+- Network Communication
 
+---
 
+#### User Code
 
+Driver Program'de calisan kodlar.
+
+Bu kodlar Executor'lerde **serialize** edilecek fonksyonlardan olusur.
+Yani kod hem Driver Program'de hem Executor Process'te calisir.
+
+Executor'e gonderilen, serialize edilmis fonksyonlar, **task**lar olarak calistirilir. Icinde kodda belirtilen class'lar fonksyonlar variable'lar bulunur.
+
+Koddaki su hatalarda, executorler Driver'a hatayi bildirir ve driver islemleri durdurur:
+
+- Syntax
+- Serialization
+- Data validation
+- Koddaki diger hatalar
+
+Kod hatalari **Driver Event Log**dan bulunabilir.
+
+---
+
+#### Dependency Issues
+
+Applicationlar app library'lere de bagimli olabilir, app file'lara da bagimli olabilir. App File'lar Python scriptleri, Java JAR'lari veya gerekli Data dosyalari olabilir.
+
+Dependency'ler tum Node'larda mevcut olmalidir:
+
+- PreInstallation
+- Spark-Submit ile app'e pasla.
+
+Dependency'ler hem mevcut olmali hem ayni versiyon olmali.
+
+Event Log'dan ilgili hatalarin bilgisi alinabilir.
+
+---
+
+#### Resource Issues
+
+CPU ve Memory elinde olmasi lazim. Resource olmazsa task'lar timeout almaya baslar. **Task Starvation** da denir.
+
+---
+
+#### Log Files
+
+`work/<app-id>/<stdout|error>` altinda log dosyalari bulunur. Her applicationun kendi loglari var haliyle.
+
+Spark Standalone'u kullaniyorsan, master ve worker loglari `log/` altina loglanir.
+
+###
 
 
 
