@@ -10,6 +10,7 @@ Notes from videos/labs. Mostly in Turkish.
 4. [Week 4 - DataFrames & SparkSQL](#week-4---dataframes--sparksql)
 5. [Week 5 - Spark Architecture](#week-5---spark-architecture)
 6. [Week 5 - Spark Runtime Environments](#week-5---spark-runtime-environments)
+7. [Week 6 - Monitoring & Tuning](#week-6---monitoring--tuning)
 
 ## Week 1 - Introduction
 
@@ -1570,7 +1571,7 @@ Args da programa paslanan argumanlar. `args[]` yani kurban oldugum.
 
 **Spark**-**Submit** **Examples**
 
-1. YARN ile Scala'daki `'SprakPi'` isimli programi calistiracagiz. Arguman olarak 1000 paslayacagiz.
+1. YARN ile Scala'daki `'SparkPi'` isimli programi calistiracagiz. Arguman olarak 1000 paslayacagiz.
 
 ```sh
 # Launch Scala SparkPi to a YARN cluster
@@ -1910,6 +1911,150 @@ Kube labaratuvar notlarini [Kube Lab.md](resource/kube_lab.md) dosyasinda yedekl
 - You can set Spark configuration using properties (to control application behavior), environment variables (to adjust settings on a per-machine basis) or logging properties (to control logging outputs)​. Spark property configuration follows a precedence order, with the highest being configuration set programmatically, then spark-submit configuration and lastly configuration set in the spark-defaults.conf file​. Use Static configuration options for values that don’t change from run to run or properties related to the application, such as the application name​. Use Dynamic configuration options for values that change or need tuning when deployed, such as master location, executor memory or core settings​.
 
 - Use Kubernetes to run containerized applications on a cluster, to manage distributed systems such as Spark with more flexibility and resilience. You can run Kubernetes as a deployment environment, which is useful for trying out changes before deploying to clusters in the cloud​. Kubernetes can be hosted on private or hybrid clouds, and set up using existing tools to bootstrap clusters, or using turnkey options from certified providers​. While you can use Kubernetes with Spark launched either in client or cluster mode, when using Client mode, executors must be able to connect with the driver and pod cleanup settings are required.
+
+## Week 6 - Monitoring & Tuning
+
+1. [Spark UI](#spark-ui)
+2. [Monitoring App Progress](#monitoring-application-progress)
+
+### Spark UI
+
+Driver ve ona bagli olan **SparkContext** calisiyorken,
+`http://<driver-node>:4040` uzerinde Spark'in **Application UI**'i calisir.
+Application aktif degilse UI da calismaz.
+
+Sekmeler:
+
+- Running Jobs, Stages, Tasks
+- Storage of persisted RDD's and DataFrames
+- Environment configuration and properties
+- Executor Summary
+- SQL Information (If SQL queries are available)
+
+---
+
+**Jobs sekmesi**
+
+**Jobs summary** var burada, altinda **event timeline** var, altinda da islerin detaylarina girebilecegin **job listesi** var.
+
+Islerden birine basip detaylara girelim:
+
+Bi timeline daha burada. Altinda da job'la ilgili stage'lerin listesi var.
+
+---
+
+Diger sekmelerde de ilgili bilgiler olabildigince verilmis.
+SQL tabinda query plan / query DAG de incelenebiliyor, varsa eger.
+
+### Monitoring Application Progress
+
+UI kolay bir erisim sundugu icin hata alan node'lari, bottleneck'leri filan bulmayi kolaylastiriyor. Workflow optimization icin filan da ideal.
+
+App flow'un icerikleri:
+
+Farkli farkli related job'lar uzerinden app calisabilir.
+
+- Farkli data sourcelarina erisebilirler.
+- Bir veya birden fazla DataFrame olabilir
+- DataFrame'lere uygulanan action'lar var bir yanda.
+
+Workflowlar sunlari icerebilir:
+
+- Driver programda, SparContext tarafindan **olusturulan job**'lar
+- Executorlerde **calisan job**'lar
+- Driver'a veya diske sonuclari aktaran **bitmis job**'lar
+
+---
+
+**How Jobs Progress:**
+
+1. **Job**'lar **Stage**'lere bolunur. **DAG** uzerinden modellenir.
+2. Mevcut **Stage**deki **Task**'lar cluster'da schedule'lanir.
+3. **Stage, Task**lari bitirince, **DAG**taki siradaki **Stage** baslar.
+4. Tum **Stage**ler bitene kadar **DAG** uzerinden ilerlenir.
+
+    - Bir *Stage*deki *task* basarisiz olursa, birkac denemeden sonra Spark o *task*i, *stage*i ve *job*i basarisiz olarak isaretler ve application'i durdurur.
+
+---
+
+**Workflow Sequence Timeline**
+
+Example:
+
+![Spark Workflow](resource/Spark_Workflow_1.png)
+
+- Stage 0 icinde shuffle gerektirmeyen islem yapiliyor.
+- Stage 0 - Stage 1 arasinda Shuffle gerektiren islem & Shuffle.
+- Job 1, Job 0'daki her sey bitene kadar bekliyor.
+- Task 7 bittiginde Executor'un task 6'yi beklemesine gerek yok. Direkt Task 8'e baslayabilir.
+- Job'un bitmesi icin icindeki task 8 ve task 9'un ikisini birden beklemesi gerekli.
+
+---
+
+**Code Example**
+
+```py
+# Read a parquet file
+df = spark.read.parquer("users.parquet")
+
+# Select some columns and cache to memory
+df = df.select("country","salary").cache()
+
+# Group data by country and compute mean salary per country
+mean_salaries = df.groupBy("country").agg({"salary":"mean"}).collect()
+```
+
+Bu kodu calistirdiktan sonra Spark UI'a girersen 2 job gorursun:
+
+1. Read the parquet file
+2. Collects the computations to send to the driver
+
+--> Job #2'ye girelim detaylarina bakalim:
+
+Stage'leri gorebiliriz.
+Ayrica **DAG** grafigi ile stage'leri ve aralarindaki Shuffle'i da rahatca gorebiliriz.
+
+--> Stage'e girelim detaylarina bakalim:
+
+Stage Timeline cikti karsimiza. Stage'de bulunan task'lari timeline grafige dokmus.
+
+Buradan uzun suren task'leri veya fail olan task'leri inceleyebiliriz.
+
+Parallelism ne kadar uygun ona bakabiliriz.
+
+--> Task'e girelim detaylarina bakalim:
+
+Task hakkinda detayli bilgiler cikar. Kac record isledigi, suresi, ilgili executor log'lari filan.
+
+---
+
+**Akisin Sonu**
+
+Job'lar bittiginde, **SparkContext** de ya manuel olarak ya da otomatik sonlandirilacaktir.
+
+Dolayisiyla UI da kapanacak.
+
+UI'a app bittikten sonra bakmak istiyorsan **Event Logging**i enable etmen lazim. Boylece host driver uzerinden degil de, **History Server** uzerinden calisacaktir. Bunun icin yapilmasi gerekenler:
+
+- Verify that **event logging** is enabled.
+    - Submit ederken su opsiyonlari ayarla:
+        - `spark.eventLog.enabled true`
+        - `spark.eventLog.dir <path-for-log-files>`
+- Spark History Server'a girerek App UI'a eris
+    - `http://<host-url>:18080`
+- Start History Server
+    - `./sbin/start-history-server.sh`
+
+
+
+
+
+
+
+
+
+
+
 
 
 
