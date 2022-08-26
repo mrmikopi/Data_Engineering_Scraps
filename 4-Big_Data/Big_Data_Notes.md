@@ -1918,6 +1918,7 @@ Kube labaratuvar notlarini [Kube Lab.md](resource/kube_lab.md) dosyasinda yedekl
 2. [Monitoring App Progress](#monitoring-application-progress)
 3. [Debugging Spark Application Issues](#debugging-spark-application-issues)
 4. [Memory Resources](#memory-resources)
+5. [CPU Resources](#cpu-resources)
 
 ### Spark UI
 
@@ -2200,6 +2201,123 @@ Ayarlari makinadan daha fazla vermemeye calis. Makinanda 8 core varken 16 core y
 
 - Tum mevcut islemci cekirdekleri
 - Tum memory'nin -1Gb eksigi
+
+### CPU Resources
+
+Driver'a da Executor'e cpu'lar atanir.
+
+Parallelism, elindeki islemci cekirdegi kadar olur.
+Executorler, application'a verdigin cekirdek kadar taski paralel calistirir.
+
+Kullanilmayan core'lar havuza geri doner.
+
+Worker cpu sayisi belli oldugu icin havuzda cekirdek yoksa, application mevcut tasklarin bitmesini beklemek zorunda.
+Bunun icin Spark, tasklari **queue**ya alir.
+Executor'ler musait oldukca hoppp atama yapar.
+
+#### Setting Cores on Submit
+
+Spark Standalone Cluster'da **Executor Process Basina** core sayisi belirlenebilir.
+
+```sh
+$ ./bin/spark-submit \
+    --class or.apache.spark.examples.SparkPi \
+    --master spark://<spark-master-URL>:7077 \
+    --executor-cores 8 \
+    /path/to/examples.jar \
+    1000
+```
+
+Yukarida 8 cekirdek ekledik.
+
+**Bu su demek:**
+
+Eger mevcutta 7 cekirdek varsa **executor baslamaz!**. 23 cekirdegin varsa total, 16'si Executor'lerdeyse (8x2), 3. executor baslamaz! 
+
+---
+
+Spark'ta **Application basina** kac cekirdek oldugunu da:
+
+```sh
+$ ./bin/spark-submit \
+    --class or.apache.spark.examples.SparkPi \
+    --master spark://<spark-master-URL>:7077 \
+    --total-executor-cores 50 \
+    /path/to/examples.jar \
+    1000
+```
+
+Ile belirttik.
+
+---
+
+**Cluster Manager / Worker Node Resource**'lari icin:
+
+```sh
+$ ./sbin/start-worker.sh \
+    spark://<spark-master-URL> \
+    --memory 10G --cores 8
+```
+
+Ile memory basliginda da belirtmistik.
+
+**Ayni Makinada** worker harici baska bi node varsa (**master** gibi),
+Ustteki --cores'u maximumdan dusuk tutmakta fayda var.
+
+Spark'in varsayilan davranisi:
+
+- **Bir Worker Node** icinde **Bir Executor Process** calisir.
+- O tek **Executor** icinde, **core sayisi** kadar **Thread** olur paralelizasyon icin.
+
+---
+
+#### Core Utilization Example
+
+Bu ornekte, Standalone cluster kullanan, 1 worker node ve 6 core calistiran bir makinamiz olsun.
+Bu makina uzerinde 2 adet submit calistiricaz art arda.
+
+**Birinci** Submit scriptini soyle cagiralim:
+
+```sh
+$ ./bin/spark-submit \
+    --master spark://<spark-master-URL>:7077 \
+    --executor-cores 4 \
+    examples/src/main/python/pi.py \
+    1000
+```
+
+Executor'de 2 tane core kalacak musait sekilde. 6 - 4 = 2
+
+**Ikinci** Submit Scripti:
+
+```sh
+$ ./bin/spark-submit \
+    --master spark://<spark-master-URL>:7077 \
+    --executor-cores 4 \
+    examples/src/main/python/pi.py \
+    1000
+```
+
+Digerinden kalan 2 core bu scripti calistirmayacaktir. Cunku 4 core ile calismasini soyledik. Ilk Submit / Job bitene kadar beklemek zorundadir.
+
+---
+
+**Ikinci** Script soyle olsaydi:
+
+```sh
+$ ./bin/spark-submit \
+    --master spark://<spark-master-URL>:7077 \
+    --executor-cores 2 \
+    examples/src/main/python/pi.py \
+    1000
+```
+
+Artik bosta kalan 2 core ile bu ikinci application'u calistirabilirdik. App1 ve App2 es zamanli baslamis olur.
+
+
+
+
+
 
 
 
