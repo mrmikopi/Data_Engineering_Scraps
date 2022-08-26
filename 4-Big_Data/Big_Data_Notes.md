@@ -1917,6 +1917,7 @@ Kube labaratuvar notlarini [Kube Lab.md](resource/kube_lab.md) dosyasinda yedekl
 1. [Spark UI](#spark-ui)
 2. [Monitoring App Progress](#monitoring-application-progress)
 3. [Debugging Spark Application Issues](#debugging-spark-application-issues)
+4. [Memory Resources](#memory-resources)
 
 ### Spark UI
 
@@ -2105,7 +2106,102 @@ CPU ve Memory elinde olmasi lazim. Resource olmazsa task'lar timeout almaya basl
 
 Spark Standalone'u kullaniyorsan, master ve worker loglari `log/` altina loglanir.
 
-###
+### Memory Resources
+
+Driver ve Executor'lerin memory icin upper limitleri var. Verilen limit asilirsa **disk spill** veya **out of memory errors** yasanabilir
+
+**Executorler** Processing ve caching icin memory kullanir. Excessive caching memory icin tehlike yaratir.
+
+**Driver**, Loads data, broadcasts variables. Also handles results, such as collections. Driver'a tum datanin yuklenmesi memory yuku olacagindan, datayi filtreleyip subset alabiliriz yuku azaltmak icin.
+
+---
+
+#### Unified Memory
+
+![Spark Unified Memory](resource/Spark_Memory_1.png)
+
+- Sekilde `/--M--\` alaniyla gosterilen bolge Executor ve Storage icin kullanilir. Storage'dan kasit Cache.
+- Spark, mevcut kullanimlara gore Storage ve Executorler arasinda memory'i pay eder.
+- Executorler kullanmiyorsa, storage'a tum `-M-` alani tahsis edilir.
+- Executorler kullanima gectiginde, resimde *kesikli cizgi*yle belirtilen bir tresholda kadar Storage'dan memory alabilir. Bu alan cache'li memory blocklaridir ve pay edilmeden muaftir.
+- Eger caching yoksa, tum alan Executor'lere tahsis edilir.
+- Storage, kullanimda olan Executor memory'den odunc pay alamaz. Dizayn zor oldugu icin. Storage: 
+    - Caching yoksa hic kullanim almaz
+    - Ya cache'li miktar kadar, minimum kullanim alir (treshold) 
+    - Ya Executor'den kalan memory ile kullanim yapar
+    - Ya da Executor kullanilmiyorsa tum Heap alanini alir.
+
+- Executor'ler:
+    - Kullanim yoksa hic memory almaz, hepsi storage'a
+    - Kullanim var ama ekstra gerekli degilse belli bir miktar. Storage'dan alir gibi dusunebiliriz.
+    - Storage'in minimum treshold miktarina kadar kullanim yapabilir.
+    - Storage yoksa hepsi.
+
+#### Data Persistence
+
+**Data Caching** ile bagdastir. 
+Memory'de veya disk'te cacheleme yapilabilir.
+
+DataFrame'i cache'lediginde, o dataframe'de yapilacak islemler DF'in surekli tekrar yuklenmesini gerektirmez. 
+Less computation.
+
+Machine Learning workload'larinda essential cunku ayni data uzerinde surekli iteration kosman lazim.
+
+--- 
+
+**Caching in code**
+
+Asagidaki kodda `rand()` ile random degerleri olan bir column ekleniyor. Cache yapmazsan, her cagrimda degerler tekrar olusturulur. `.cache()` ile ilk olusan random degerler memory'de saklanir.
+
+```py
+# Define dataframe with a random value column
+df = spark.range(100).withColumn("features", rand()).cache()
+# Dataframe is not created yet, since lazy evaluation.
+
+# Here, Df is generated and cached since action is applied:
+print(df.filter(col("features") > 0.5).count())
+
+# Cached DF with 'features' is reused in subsequent calls:
+print(df.filter(col("features") < 0.5).count())
+# Same random values appear since no recalculation
+```
+
+#### Submit ile Memory belirleme
+
+Memory miktari property dosyalarinda belirtilebilecegi gibi `submit`'e de verilebilir.
+
+```sh
+$ ./bin/spark-submit \
+    --class org.apache.spark.examples.SparkPi \
+    --master spark://<spark-master-URL>:7077 \
+    --executor-memory 10G \
+    /path/to/examples.jar \
+    1000
+```
+
+`--executor-memory 10G` ile Executor basina 10Gb Memory tahsis ettik.
+
+---
+
+**Spark Standalone Cluster** kullaniyorsan eger,
+
+Memory ve CPU'yu, **standalone worker**'lari baslatirken ayarlayabilirsin.
+
+```sh
+# Start Standalone with max 10g memory and 8 cores
+$ ./sbin/start-worker.sh \
+    spark://<spark-master-URL> \
+    --memory 10G --cores 8
+```
+
+Ayarlari makinadan daha fazla vermemeye calis. Makinanda 8 core varken 16 core yazarsan thread'ler simultane calismaya calisacak ve performansin dusecek.
+
+**Default ayarlar**:
+
+- Tum mevcut islemci cekirdekleri
+- Tum memory'nin -1Gb eksigi
+
+
 
 
 
