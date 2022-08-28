@@ -575,7 +575,7 @@ RDD supports file types:
 - Text
 - SequenceFiles
 - Avro
-- Parquer
+- Parquet
 - Hadoop input formats
 
 RDD Supports file formats:
